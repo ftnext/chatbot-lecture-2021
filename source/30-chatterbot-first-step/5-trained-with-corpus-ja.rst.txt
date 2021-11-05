@@ -1,0 +1,21 @@
+コーパスを使って訓練したチャットボット（日本語）
+==================================================
+
+ライブラリのインストール
+----------------------------------------
+
+XXX: インストールがうまくいかない事象が発生中
+
+.. code-block:: shell
+
+    $ pip install git+https://github.com/gunthercox/chatterbot-corpus
+
+2021/11時点では ``1.2.0`` が入ります。
+
+プログラム
+--------------------
+
+.. literalinclude:: ../../cli/corpus_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :emphasize-lines: 11,14
