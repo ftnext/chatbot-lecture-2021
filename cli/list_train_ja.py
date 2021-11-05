@@ -18,7 +18,9 @@ class CustomJPN(JPN):
 
 
 if __name__ == "__main__":
-    chatbot = ChatBot("Training with list bot", tagger_language=CustomJPN)
+    chatbot = ChatBot(
+        "Training with list bot", database_uri=None, tagger_language=CustomJPN
+    )
 
     trainer = ListTrainer(chatbot)
     trainer.train(conversation)
