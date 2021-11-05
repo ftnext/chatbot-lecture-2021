@@ -13,7 +13,9 @@ if __name__ == "__main__":
     cli_dir_path = Path(__file__).parent
     data_yml_path = cli_dir_path / "greetings_ja.yml"
 
-    chatbot = ChatBot("Training from yaml bot", tagger_language=CustomJPN)
+    chatbot = ChatBot(
+        "Training from yaml bot", database_uri=None, tagger_language=CustomJPN
+    )
 
     trainer = ChatterBotCorpusTrainer(chatbot)
     trainer.train(str(data_yml_path))
