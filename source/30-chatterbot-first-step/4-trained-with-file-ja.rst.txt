@@ -1,0 +1,24 @@
+ファイルを使って訓練したチャットボット（日本語）
+==================================================
+
+ライブラリのインストール
+----------------------------------------
+
+.. code-block:: shell
+
+    $ pip install 'PyYAML<4'
+
+会話のデータをファイルに用意
+----------------------------------------
+
+.. literalinclude:: ../../cli/greetings_ja.yml
+    :language: yaml
+    :caption: greetings_ja.yml
+
+プログラム
+--------------------
+
+.. literalinclude:: ../../cli/yaml_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :emphasize-lines: 1,5,13-14,20-21
