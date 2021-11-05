@@ -10,7 +10,7 @@ class CustomJPN(JPN):
 
 
 if __name__ == "__main__":
-    cli_dir_path = Path(__file__).parent
+    cli_dir_path = Path(__file__).resolve().parent
     data_yml_path = cli_dir_path / "greetings_ja.yml"
 
     chatbot = ChatBot(
