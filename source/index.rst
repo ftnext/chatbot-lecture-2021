@@ -11,6 +11,8 @@ Welcome to chatbot-lecture-2021's documentation!
    :caption: Contents:
 
    10-overview/index
+   20-environment/index
+   30-chatterbot-first-step/index
 
 
 Indices and tables
