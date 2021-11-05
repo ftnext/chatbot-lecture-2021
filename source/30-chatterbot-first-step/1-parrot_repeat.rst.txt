@@ -1,0 +1,33 @@
+オウム返しするチャットボット（英語）
+========================================
+
+ライブラリのインストール
+----------------------------------------
+
+.. code-block:: shell
+
+    $ pip install 'spacy<3'
+    $ python -m spacy download en
+
+プログラム
+--------------------
+
+.. literalinclude:: ../../cli/parrot_en.py
+    :language: python
+    :caption: my_chatbot.py
+
+実行例
+--------------------
+
+.. code-block::
+
+    $ python my_chatbot.py
+    You: Hello
+    Bot: Hello
+    You: Hi
+    Bot: Hello
+    You: How are you?
+    Bot: Hello  # Hiが返ることもあります
+    You: You seem to be fine, right?
+    Bot: Hello
+    # Ctrl+C または Ctrl+D で終了します
