@@ -1,7 +1,7 @@
 from chatterbot import ChatBot
 
 if __name__ == "__main__":
-    chatbot = ChatBot("Parrot bot")
+    chatbot = ChatBot("Parrot bot", database_uri=None)
 
     while True:
         try:
