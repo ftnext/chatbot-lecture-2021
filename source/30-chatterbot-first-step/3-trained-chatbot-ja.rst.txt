@@ -1,0 +1,31 @@
+訓練したチャットボット（日本語）
+========================================
+
+ライブラリのインストール
+----------------------------------------
+
+.. code-block:: shell
+
+    $ python -m spacy download ja_core_news_sm
+
+プログラム
+--------------------
+
+.. literalinclude:: ../../cli/list_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :emphasize-lines: 2,16-17,22
+
+実行例
+--------------------
+
+.. code-block::
+
+    $ python my_chatbot.py
+    List Trainer: [####################] 100%
+    You: こんにちは
+    Bot: どうも！
+    You: 元気ですか？
+    Bot: 順調です  # この実行例は非常にうまくいった例です
+    You: それはよかった
+    Bot: ありがとうございます
