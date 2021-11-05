@@ -1,0 +1,26 @@
+訓練したチャットボット（英語）
+========================================
+
+プログラム
+--------------------
+
+.. literalinclude:: ../../cli/list_train_en.py
+    :language: python
+    :caption: my_chatbot.py
+    :emphasize-lines: 2,4-12,17-18
+
+実行例
+--------------------
+
+.. code-block::
+
+    $ python my_chatbot.py
+    List Trainer: [####################] 100%
+    You: Hello
+    Bot: Hi there!  # リストの次の文が返ります
+    You: How are you doing?
+    Bot: I'm doing great.
+    You: I'm doing great.
+    Bot: That is good to hear.
+    You: Good morning  # リストにない文
+    Bot: How are you doing?
