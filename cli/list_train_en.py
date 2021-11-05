@@ -12,7 +12,7 @@ conversation = [
 ]
 
 if __name__ == "__main__":
-    chatbot = ChatBot("Training with list bot")
+    chatbot = ChatBot("Training with list bot", database_uri=None)
 
     trainer = ListTrainer(chatbot)
     trainer.train(conversation)
