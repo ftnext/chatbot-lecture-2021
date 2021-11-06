@@ -8,13 +8,49 @@
 
     $ python -m spacy download ja_core_news_sm
 
+https://scrapbox.io/nikkie-memos/ja_core_news_sm
+
 プログラム
 --------------------
 
 .. literalinclude:: ../../cli/list_train_ja.py
     :language: python
     :caption: my_chatbot.py
+    :linenos:
     :emphasize-lines: 2,16-17,22
+
+``conversation`` が指すリストを日本語にしました。
+
+プログラムの解説
+--------------------
+
+``CustomJPN``
+^^^^^^^^^^^^^^^^^^^^
+
+``ChatBot`` インスタンスを作るとき（22行目）に ``tagger_language`` 引数に指定するクラスを用意します。
+この引数に応じて、例えば ``spaCy`` のモデルが使われます。
+
+``chatterbot.languages.JPN`` クラスを継承して、カスタマイズしています（16行目）。
+``chatterbot`` が裏で ``spacy.load`` を呼び出す際に、 ``"ja_core_news_sm"`` が指定されるようにします。
+
+カスタマイズする前（``chatterbot.languages.JPN``）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+https://github.com/gunthercox/ChatterBot/blob/181c69f2a44c2da88f9352d9c693773b09beb1f5/chatterbot/languages.py#L991 参照
+
+- ``ISO_639_1``： ``'ja'``
+- ``ISO_639``： ``'jpn'``
+- ``ENGLISH_NAME``： ``'Japanese'``
+
+カスタマイズ後
+~~~~~~~~~~~~~~~~~~~~
+
+- ``ISO_639_1``： ``"ja_core_news_sm"`` に変更
+- ``ISO_639`` （変更なし）
+- ``ENGLISH_NAME`` （変更なし）
+
+``ISO_639_1`` だけを変えています。
+対話モードで ``from my_chatbot import CustomJPN`` をして各属性の指す値を確認できます。
 
 実行例
 --------------------
