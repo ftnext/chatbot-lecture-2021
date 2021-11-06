@@ -9,12 +9,72 @@
     $ pip install 'spacy<3'
     $ python -m spacy download en
 
+https://scrapbox.io/nikkie-memos/spaCy
+
 プログラム
 --------------------
 
 .. literalinclude:: ../../cli/parrot_en.py
     :language: python
     :caption: my_chatbot.py
+    :linenos:
+
+プログラムの解説
+--------------------
+
+スクリプトとして実行されたときの分岐
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+3行目の ``if`` 文で評価している ``__name__ == "__main__"`` は
+:command:`python my_chatbot.py` のようにスクリプトを実行したときに ``True`` となります。
+
+詳しくは https://blog.pyq.jp/entry/Python_kaiketsu_180207 をどうぞ
+
+``ChatBot``
+^^^^^^^^^^^^^^^^^^^^
+
+``chatterbot.ChatBot`` クラスをインスタンス化（4行目）
+
+- 第1引数はチャットボットの名前
+- ``database_uri`` はチャットボットが参照するデータベースの指定
+
+  - ``None`` は「 **インメモリ** のSQLiteを使う」という指定になります
+  - Pythonの標準ライブラリの中に `sqlite3モジュール <https://docs.python.org/ja/3/library/sqlite3.html>`_ があるので、他のインストールは不要でSQLiteを利用できます
+  - 発展：SQLite以外のデータベース（MySQLなど）に接続するにはライブラリをインストールします
+
+ドキュメント：https://chatterbot.readthedocs.io/en/stable/chatterbot.html
+
+Botとやり取りするための ``while`` ループ
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+6〜12行目の無限ループについて説明します。
+無限ループは続くスクリプトでも共通です。
+
+- 8行目： `input関数 <https://docs.python.org/ja/3/library/functions.html#input>`_
+
+  - 渡された引数 ``"You: "`` を画面に出力し、改行が入力されるまで待ちます
+  - 改行が入力されたら、改行までの文字列を ``input`` 関数の返り値として返します
+  - チャットボットに対する **人間の入力を処理** しています
+
+- 9行目： ``chatbot`` の ``get_response`` メソッド
+
+  - 入力に対してチャットボットの応答を返します
+  - ``chatterbot`` ライブラリの中で定義されている ``Statement`` クラスのインスタンスです
+
+- 10行目：チャットボットの応答を f-string （変数の指す値を埋め込める文字列）を使って出力します
+
+以上の3行により人間とチャットボットとでやり取りできます。
+
+やり取りを終了するための ``try`` - ``except``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+11行目で指定している例外について
+
+- `KeyboardInterrupt <https://docs.python.org/ja/3/library/exceptions.html#KeyboardInterrupt>`_ ：:kbd:`Ctrl` + :kbd:`C` を押したときに送出されます
+- `EOFError <https://docs.python.org/ja/3/library/exceptions.html#EOFError>`_ ： ``input`` 関数が何もデータを読まずに end-of-file (EOF) に達したときに送出されます
+- `SystemExit <https://docs.python.org/ja/3/library/exceptions.html#SystemExit>`_ ：:kbd:`Ctrl` + :kbd:`D` を押したときに送出されます
+
+これらの例外のいずれかが送出されると、12行目の ``break`` により、無限ループから抜けます。
 
 実行例
 --------------------
@@ -31,3 +91,7 @@
     You: You seem to be fine, right?
     Bot: Hello
     # Ctrl+C または Ctrl+D で終了します
+
+- 人間の入力に対して自動応答しています！（これも立派なチャットボットです）
+- 人間の入力は ``chatterbot`` によりデータベースに保存されます（長くやり取りすれば Hello 以外が返ってくると思います）
+- 応答は要領を得ないですね → **訓練** していきます
