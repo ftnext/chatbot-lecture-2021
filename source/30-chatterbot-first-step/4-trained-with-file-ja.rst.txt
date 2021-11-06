@@ -1,6 +1,9 @@
 ファイルを使って訓練したチャットボット（日本語）
 ==================================================
 
+訓練に使う文をもっと増やせば、チャットボットの応答はもっとよくなりますが、リストだとプログラムが長くなってしまいます。
+そこで訓練に使う文を別のファイル（YAML形式）に切り出すことを ``chatterbot`` はサポートしています。
+
 ライブラリのインストール
 ----------------------------------------
 
@@ -8,12 +11,39 @@
 
     $ pip install 'PyYAML<4'
 
+YAML形式のファイルを解析するためのライブラリです。
+
 会話のデータをファイルに用意
 ----------------------------------------
+
+入力と応答の組は ``chatterbot`` がサポートするYAMLファイルでは、以下のように表します。
+
+.. code-block:: yaml
+
+    - - 入力
+      - 応答
+
+例： ``"こんにちは"`` と言われたら ``"どうも！"`` と返す
+
+.. code-block:: yaml
+
+    - - こんにちは
+      - どうも！
+
+``conversation`` が指すリストをファイルで表すと次のようになります。
 
 .. literalinclude:: ../../cli/greetings_ja.yml
     :language: yaml
     :caption: greetings_ja.yml
+
+ファイルの配置
+
+.. code-block::
+
+    .
+    ├── env
+    ├── greetings_ja.yml
+    └── my_chatbot.py
 
 プログラム
 --------------------
@@ -21,4 +51,39 @@
 .. literalinclude:: ../../cli/yaml_train_ja.py
     :language: python
     :caption: my_chatbot.py
+    :linenos:
     :emphasize-lines: 1,5,13-14,20-21
+
+プログラムの解説
+--------------------
+
+``ChatterBotCorpusTrainer``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ファイルを使った訓練に使う ``Trainer`` です。
+
+``train`` メソッドにファイルのパスを表す文字列を指定しています（21行目）。
+
+``pathlib``
+^^^^^^^^^^^^^^^^^^^^
+
+※ ``chatterbot`` 関係のトピックというより、Pythonについてのトピックです
+
+ファイルパスなどのパスを扱うモジュールです（標準ライブラリにあります）。
+
+https://docs.python.org/ja/3/library/pathlib.html
+
+``str(data_yml_path)`` では、パスオブジェクトをパスを表す **文字列** に変えています。
+
+.. code-block:: python
+
+    >>> from pathlib import Path
+    >>> data_yml_path = Path("greetings_ja.yml")
+    >>> type(data_yml_path)
+    <class 'pathlib.PosixPath'>
+    >>> data_yml_path
+    PosixPath('greetings_ja.yml')
+    >>> str(data_yml_path)
+    'greetings_ja.yml'
+
+訓練に使った文は前項と共通なので、実行例は省略します。
