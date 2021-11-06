@@ -5,4 +5,11 @@ Pythonでチャットボットを作るには
     
 https://chatterbot.readthedocs.io/en/stable/
 
-デモ
+ドキュメントのAbout ChatterBotに自動応答している例があります。
+
+    | user: Good morning! How are you doing?
+    | bot:  I am doing very well, thank you for asking.
+    | user: You're welcome.
+    | bot:  Do you like hats?
+
+デモ（「ChatterBot はじめの一歩」の「コーパスを使って訓練したチャットボット（日本語）」を実行しました）
