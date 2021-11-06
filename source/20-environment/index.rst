@@ -36,7 +36,7 @@ Pythonのバージョン
 
 .. code-block:: shell
 
-    $ python3 -m venv env
+    $ python3.7 -m venv env
     $ source env/bin/activate
     (env) $ python -m pip install -U pip
 
@@ -50,3 +50,6 @@ Pythonのバージョン
     (env) $ pip install ChatterBot
 
 2021/11時点では ``1.0.8`` がインストールされます。
+
+この時点では対話モードで ``import chatterbot`` してもエラー（``ModuleNotFoundError``）が送出されます。
+次の項目にて、依存するライブラリをインストールすることで解決します。
