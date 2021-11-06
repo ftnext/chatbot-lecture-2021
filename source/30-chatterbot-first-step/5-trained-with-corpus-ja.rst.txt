@@ -1,6 +1,10 @@
 コーパスを使って訓練したチャットボット（日本語）
 ==================================================
 
+コーパスとは、言語の使用方法を蓄積した文書集合。
+
+https://scrapbox.io/nikkie-memos/%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9
+
 ライブラリのインストール
 ----------------------------------------
 
@@ -18,4 +22,40 @@ XXX: インストールがうまくいかない事象が発生中
 .. literalinclude:: ../../cli/corpus_train_ja.py
     :language: python
     :caption: my_chatbot.py
+    :linenos:
     :emphasize-lines: 11,14
+
+プログラムの解説
+--------------------
+
+``database_uri`` 引数を指定しない（11行目）
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+訓練や入力された文は （メモリ上ではなく） ``db.sqlite3`` というファイルに保存されます。
+ファイルに保存されるのでスクリプトを終了しても残ります。
+
+trainメソッドの引数（14行目）
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/japanese にあるYAMLファイル全部使って訓練するように指定しています。
+
+発展： ``chatterbot.corpus`` を読み込んだときに ``chatterbot_corpus`` が読み込めるか試みます。
+読み込めた場合は ``chatterbot_corpus`` の ``data`` 以下のディレクトリがコーパスとして指定できます。
+
+スクリプトを実行してチャットボットとやり取りしてみてください！
+
+ライブラリのインストールがうまくいかない場合
+------------------------------------------------------------
+
+GitHubの代わりにPyPIからインストール
+
+.. code-block:: shell
+
+    $ pip install chatterbot-corpus
+
+このとき **日本語のコーパスはインストールされません**。
+なので、英語のコーパスを代わりに指定して動くことを確認してください（14行目）。
+
+.. code-block:: python
+
+    trainer.train("chatterbot.corpus.english")
