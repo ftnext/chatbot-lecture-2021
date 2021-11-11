@@ -10,9 +10,28 @@
   </head>
   <body>
     <h1>Talk with chatbot</h1>
+    <div id="chat-log"></div>
+
     <form method="POST" action="{% url 'chat:bot_response' %}">
       {% csrf_token %} {{ form.as_p }}
       <button type="submit">Send</button>
     </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $("form").submit(function (event) {
+        event.preventDefault();
+        var form = $(this);
+
+        $.ajax({
+          url: form.prop("action"),
+          type: form.prop("method"),
+          data: form.serialize(),
+          dataType: "text",
+        }).done(function (statement) {
+          $("#chat-log").text(statement);
+        });
+      });
+    </script>
   </body>
 </html>
