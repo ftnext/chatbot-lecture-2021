@@ -10,5 +10,9 @@
   </head>
   <body>
     <h1>Talk with chatbot</h1>
+    <form method="POST" action="{% url 'chat:bot_response' %}">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Send</button>
+    </form>
   </body>
 </html>
