@@ -19,6 +19,14 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+      var chatLog = $("#chat-log");
+
+      function createRow(text) {
+        var row = $("<p></p>");
+        row.text(text);
+        chatLog.append(row);
+      }
+
       $("form").submit(function (event) {
         event.preventDefault();
         var form = $(this);
@@ -28,9 +36,16 @@
           type: form.prop("method"),
           data: form.serialize(),
           dataType: "text",
-        }).done(function (statement) {
-          $("#chat-log").text(statement);
-        });
+        })
+          .done(function (statement) {
+            var input = $("#id_message");
+            createRow("You -> " + input.val());
+            createRow(statement);
+            input.val("");
+          })
+          .fail(function () {
+            window.alert("もう一度やり直してください");
+          });
       });
     </script>
   </body>
