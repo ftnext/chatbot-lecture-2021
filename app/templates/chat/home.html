@@ -7,10 +7,17 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>Chatbot app</title>
+    <style>
+      .log-window {
+        max-width: 500px;
+        max-height: 300px;
+        overflow-y: scroll;
+      }
+    </style>
   </head>
   <body>
     <h1>Talk with chatbot</h1>
-    <div id="chat-log"></div>
+    <div id="chat-log" class="log-window"></div>
 
     <form method="POST" action="{% url 'chat:bot_response' %}">
       {% csrf_token %} {{ form.as_p }}
@@ -42,6 +49,7 @@
             createRow("You -> " + input.val());
             createRow(statement);
             input.val("");
+            chatLog[0].scrollTop = chatLog[0].scrollHeight;
           })
           .fail(function () {
             window.alert("もう一度やり直してください");
