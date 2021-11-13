@@ -14,6 +14,7 @@ Welcome to chatbot-lecture-2021's documentation!
    20-environment/index
    30-chatterbot-first-step/index
    40-chatbot-django-app-basic/index
+   50-send-message-django-app/index
 
 
 Indices and tables
