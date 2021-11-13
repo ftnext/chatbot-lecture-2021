@@ -7,6 +7,11 @@
 - チャットボット＝自動応答するプログラム（:ref:`what_is_chatbot`）
 - ライブラリ ``chatterbot`` を使ったPythonスクリプトを動かした（デモ）
 
+.. literalinclude:: ../../cli/corpus_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :linenos:
+
 今回やること
 ----------------------------------------
 
