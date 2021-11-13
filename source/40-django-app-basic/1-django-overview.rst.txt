@@ -1,12 +1,55 @@
 DjangoによるWebアプリ
 ========================================
 
+アンケート：Djangoを
+
+1. 授業を元に自分でアプリ作った
+2. これまでの授業で受けた
+3. 今回はじめて
+
 .. raw:: html
 
     <iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe>
 
-押さえておきたいポイント
+埋め込みではなく、手元で見たい場合のリンク：https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html
+
+※この資料はWebアプリ開発が初めての方向けに説明しているので、知っているところは飛ばしてください
+
+Webアプリ
+--------------------
+
+詳しくは、登壇資料のスライド9〜27
+
+- WebアプリはWebブラウザから使うアプリ
+- Webアプリケーションフレームワーク（以下、フレームワーク）を使って作る
+- 開発者は **フレームワークの流儀に従って** コードを追加する
+- Djangoはフレームワークの1つ
+
+Djangoの流儀
+--------------------
+
+.. TODO 埋め込めたものを眺めるわけではないので、画像として埋め込むことを検討する
+
+.. raw:: html
+
+    <iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html#/4/8" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe>
+
+ファイルの配置
+^^^^^^^^^^^^^^^^^^^^
+
+- 決められたルールに従ってファイルを配置する
+- **Djangoが用意しているコマンド** を使う
+
+ファイル配置の単位（このあと説明します）
+
+- プロジェクト
+- アプリケーション
+
+Djangoの流儀に従ってPythonを書く
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - URL設定
 - ビュー
 - テンプレート
+
+対応する **ファイル** （PythonやHTML）があります（このあと説明します）
