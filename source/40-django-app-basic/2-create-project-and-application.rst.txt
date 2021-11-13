@@ -169,10 +169,48 @@ http://127.0.0.1:8000/ をブラウザで開き、ロケットが動いている
 
 http://127.0.0.1:8000/ をブラウザで開くと、英語だった表示が日本語に変わっています。
 
+アプリケーション作成とそれに伴う設定
+----------------------------------------
+
 アプリケーション作成
+^^^^^^^^^^^^^^^^^^^^
+
+``chat`` という名前のアプリケーションを作ります。
+:file:`manage.py` の ``startapp`` サブコマンドを使います。
 
 .. code-block:: shell
 
     $ python manage.py startapp chat
 
-settings.py を変更（インストール）
+:command:`ls` で確認しましょう。
+
+.. code-block::
+
+    app
+    ├── chat  # <- アプリケーション
+    ├── djangochatbot
+    └── manage.py
+
+:file:`settings.py` を変更
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+変数 ``INSTALLED_APPS`` を探して、指す値を変更します。
+これはリストを指していて、リストの要素は文字列です。
+
+作った ``chat`` アプリケーションをリストに追加します。
+
+.. literalinclude:: ../../app/djangochatbot/settings.py
+    :language: python
+    :caption: app/djangochatbot/settings.py
+    :lines: 38-47
+    :emphasize-lines: 9
+
+発展：追加した文字列の意味
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``chat`` アプリケーションの一部として作られた :file:`app/chat/apps.py` の中のクラスを指定しています。
+
+.. literalinclude:: ../../app/chat/apps.py
+    :language: python
+    :caption: app/chat/apps.py
+    :emphasize-lines: 4
