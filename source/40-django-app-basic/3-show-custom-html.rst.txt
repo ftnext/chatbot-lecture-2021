@@ -31,7 +31,7 @@ HTMLの表示には、以下の要素が必要です。
 URL設定
 --------------------
 
-リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）。
+URL設定は、リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）。
 
 .. figure:: https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/pycon_shizu_Feb_django_intro/2/4-urlconf.png
 
@@ -127,7 +127,7 @@ URL設定に追加する
 ビュー
 --------------------
 
-URL設定により呼び出され、リクエストを処理し、レスポンスを返します（登壇資料のスライド54〜58）。
+ビューは、URL設定により呼び出され、リクエストを処理し、レスポンスを返します（登壇資料のスライド54〜58）。
 実体は関数です（クラスで定義することもできますが、この講義では扱いません）。
 
 :file:`chat/views.py` に ``home`` 関数を定義します。
@@ -152,6 +152,63 @@ URL設定により呼び出されるビューの関数は第1引数に ``request
 ブラウザで http://127.0.0.1:8000/ を開いてみましょう。
 すると、 ``TemplateDoesNotExist`` （テンプレートが存在しない）と表示されます。
 
-真っ白な画面を表示（エラーがない状態）
+テンプレート
+--------------------
 
-テンプレートにHTMLを書く
+テンプレートは、Webアプリの見た目に関わります。
+HTMLとDjango独自のタグで書かれます（登壇資料のスライド60〜66）。
+
+今送出されているエラーは「テンプレートが存在しない」ですから、テンプレートを配置すれば解決します。
+空のテンプレートを置きましょう。
+
+空のテンプレートを置く
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:file:`manage.py` やプロジェクト、アプリケーションがあるディレクトリに :file:`templates` という名前のディレクトリを作ります。
+ここに今回のアプリで使うテンプレートを置いていきます。
+
+ビューで :file:`chat/home.html` というテンプレートを指定しているので、 :file:`chat` ディレクトリの中に :file:`home.html` を置きます。
+
+.. code-block:: shell
+
+    $ mkdir -p templates/chat
+    $ touch templates/chat/home.html
+
+:file:`settings.py` を変更
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:file:`templates` ディレクトリにテンプレートがあるという設定を追加します。
+
+変更するのは ``TEMPLATES`` です。
+これはリストで、要素は辞書です。
+キー ``"DIRS"`` の値（``[]``）を書き換えます。
+
+変更後
+~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../../app/djangochatbot/settings.py
+    :language: python
+    :caption: app/djangochatbot/settings.py
+    :lines: 61-75
+    :emphasize-lines: 4
+
+.. hint:: ``BASE_DIR`` は ``pathlib`` の ``Path`` オブジェクトです（:file:`settings.py` の上部で定義されています）。
+    ``Path`` オブジェクトは ``/`` 演算子で、新たなパスを作れます。
+
+    .. code-block:: python
+
+        >>> from pathlib import Path
+        >>> Path("app")
+        PosixPath('app')
+        >>> Path("app") / "templates"
+        PosixPath('app/templates')
+
+ブラウザで http://127.0.0.1:8000/ を開くと、真っ白な画面が表示されます。
+エラーがなくなりました！
+
+いま :file:`chat/home.html` にはなにもHTMLを書いていないので、真っ白い画面が表示されます。
+テンプレートにHTMLを書いてからブラウザをリロードすると反映されます（例：``<h1>こんにちは</h1>``）。
+
+.. hint:: :file:`templates` ディレクトリを作るのもDjangoで一般的なプラクティスの1つです。
+    アプリケーションの中に :file:`chat/templates/chat/home.html` を作るだけでもエラーは解決しますが、
+    アプリケーションが増えたときに :file:`templates` ディレクトリにテンプレートがまとまっているというのは便利です。
