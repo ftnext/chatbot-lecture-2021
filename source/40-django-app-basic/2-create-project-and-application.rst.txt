@@ -73,14 +73,101 @@ Djangoの用語：プロジェクトとアプリケーション
     ├── アプリケーションB
     ├──  :
 
+プロジェクト作成と初期設定
+----------------------------------------
+
 プロジェクト作成
+^^^^^^^^^^^^^^^^^^^^
+
+``djangochatbot`` という名前のプロジェクトを作ります。
 
 .. code-block:: shell
 
     $ django-admin startproject djangochatbot
+
+:command:`ls` で確認すると以下のディレクトリ構造になっていることが確認できます。
+
+.. code-block::
+
+    ~/programming/chatbot
+    ├── djangochatbot  # <- このあと中を見ます
+    ├── db.sqlite3  # <- これまでに実行した python my_chatbot.py でできた
+    ├── env
+    ├── greetings_ja.yml
+    └── my_chatbot.py
+
+.. code-block::
+
+    djangochatbot
+    ├── djangochatbot  # <- プロジェクト
+    └── manage.py  # <- プロジェクト作成で作られます
+
+:file:`~/programming/chatbot` 直下の :file:`djangochatbot` ディレクトリをリネームしましょう。
+Webアプリのソースコードが置かれるので :file:`app` とします（プロジェクトのディレクトリと名前を変えることで説明しやすくなる都合もあります）。
+
+.. code-block:: shell
+
     $ mv djangochatbot app
 
-settings.py を変更
+Djangoアプリのサーバを動かす
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+以降は :file:`app` ディレクトリで作業します。
+
+.. code-block:: shell
+
+    $ cd app
+
+プロジェクト作成時にできた :file:`manage.py` はDjangoでのアプリケーション開発がしやすくなるサブコマンドを提供します。
+``runserver`` サブコマンドで、Djangoアプリのサーバが起動します。
+
+.. code-block:: shell
+    
+    $ python manage.py runserver
+
+http://127.0.0.1:8000/ をブラウザで開き、ロケットが動いている画面が見えたら、サーバは問題なく動いています！
+
+.. note:: Djangoアプリのサーバの停止は :kbd:`Control-C` です。
+
+.. tip:: シェルを複数開き、1つで :command:`python manage.py runserver` しておくと開発しやすいです。
+    Djangoアプリのサーバはファイルの変更を検知して自動で読み込み直します。
+    ただし新規追加したファイルは読み込めない場合があるので、ファイルを新規追加したときは **サーバを止めて再度** ``runserver`` するのをオススメします。
+
+:file:`settings.py` を変更
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. warning:: 手元のPC（＝ローカル環境）で動かすのを優先してプロジェクトを設定しています。
+    Webアプリとして公開するには :file:`settings.py` で ``SECRET_KEY`` や ``STATIC_ROOT`` などの追加設定が必要です。
+
+日本語の設定に変更します。
+:file:`settings.py` には変数が定義されていて、指す値を変えることで設定を変更できます。
+
+以下の2つの変数を探して、指す値を変更します。
+
+- ``LANGUAGE_CODE``
+- ``TIME_ZONE``
+
+変更前
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+    :caption: app/djangochatbot/settings.py
+
+    LANGUAGE_CODE = 'en-us'
+
+    TIME_ZONE = 'UTC'
+
+変更後
+~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../../app/djangochatbot/settings.py
+    :language: python
+    :caption: app/djangochatbot/settings.py
+    :lines: 113-115
+
+日本語・JSTに設定しました。
+
+http://127.0.0.1:8000/ をブラウザで開くと、英語だった表示が日本語に変わっています。
 
 アプリケーション作成
 
