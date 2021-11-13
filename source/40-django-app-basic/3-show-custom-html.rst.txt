@@ -31,7 +31,7 @@ HTMLの表示には、以下の要素が必要です。
 URL設定
 --------------------
 
-リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）
+リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）。
 
 .. figure:: https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/pycon_shizu_Feb_django_intro/2/4-urlconf.png
 
@@ -123,6 +123,34 @@ URL設定に追加する
 
 .. hint:: 5行目の ``app_name`` もDjangoで一般的なプラクティスの1つです。
     複数のアプリケーションで同じ ``name`` のURL設定があったとしても、``<app_name>:<name>`` として区別できます。
+
+ビュー
+--------------------
+
+URL設定により呼び出され、リクエストを処理し、レスポンスを返します（登壇資料のスライド54〜58）。
+実体は関数です（クラスで定義することもできますが、この講義では扱いません）。
+
+:file:`chat/views.py` に ``home`` 関数を定義します。
+
+.. code-block:: python
+    :caption: app/chat/views.py
+    :linenos:
+
+    from django.shortcuts import render
+
+
+    def home(request):
+        return render(request, "chat/home.html")
+
+URL設定により呼び出されるビューの関数は第1引数に ``request`` をとります（4行目）。
+ここにはリクエストのデータが詰まっています。
+
+``home`` 関数は :file:`chat/home.html` （テンプレート）を使ってレスポンスを組み立て、それを返しています（ブラウザに返ります）。
+
+以上の設定で :command:`python manage.py runserver` は動作するようになりました。
+
+ブラウザで http://127.0.0.1:8000/ を開いてみましょう。
+すると、 ``TemplateDoesNotExist`` （テンプレートが存在しない）と表示されます。
 
 真っ白な画面を表示（エラーがない状態）
 
