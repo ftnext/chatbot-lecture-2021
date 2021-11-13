@@ -28,6 +28,102 @@ HTMLの表示には、以下の要素が必要です。
 
 1つずつ見ていきましょう。
 
+URL設定
+--------------------
+
+リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）
+
+.. figure:: https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/pycon_shizu_Feb_django_intro/2/4-urlconf.png
+
+今回の作り方では、プロジェクトの :file:`settings.py` にて、プロジェクトの :file:`urls.py` が使われるように設定されています。
+
+プロジェクトの :file:`urls.py`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+変更前
+~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+    :caption: app/djangochatbot/urls.py
+
+    from django.contrib import admin
+    from django.urls import path
+
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+    ]
+
+ブラウザで http://127.0.0.1:8000/admin/ を開くと、Djangoが用意している管理画面にログインするための画面が表示されます。
+
+URL設定の仕組み
+~~~~~~~~~~~~~~~~~~~~
+
+URL（例：http://127.0.0.1:8000/admin/ ）は3つに分かれます（登壇資料のスライド114）。
+
+- プロトコル http
+- ホスト 127.0.0.1:8000 （＝手元のPCの8000番ポート）
+- パス admin/
+
+URL設定は **パス** を見ます。
+
+:file:`app/djangochatbot/urls.py` には「パスが ``"admin/"`` だったら、Djangoで用意している管理画面用のURL設定に沿って動作する」指定です。
+
+.. note:: ブラウザでは普段ドメイン名を入力しますよね（例：https://www.google.com/ ）
+    DNSという仕組みでドメイン名からIPアドレスに変換されています
+
+URL設定に追加する
+~~~~~~~~~~~~~~~~~~~~
+
+ブラウザで http://127.0.0.1:8000/ を開いたときの動きを設定したいので、パスは ``""`` （空文字列）です。
+
+以下のように設定します。
+
+.. literalinclude:: ../../app/djangochatbot/urls.py
+    :language: python
+    :caption: app/djangochatbot/urls.py
+    :lines: 16-22
+    :emphasize-lines: 2, 6
+
+``include`` のimportを追加します。
+``path("", include("chat.urls"))`` は、「パスが ``"admin/"`` でない場合、chatアプリケーションの :file:`urls.py` にあるURL設定を使う」という指定です。
+
+いまは :file:`app/chat/urs.py` がないので :command:`python manage.py runserver` はエラーを送出します（サーバは動いていません）。
+
+.. note:: 今回作るチャットボットアプリは小さいですが、Djangoで一般的なプラクティスに沿って手順を書いています。
+    例えばURL設定で ``include`` を使わずに、プロジェクトの :file:`urls.py` だけで進めることもできます。
+
+    Djangoで一般的なプラクティスに従うことで、今は小さなチャットボットアプリでも今後機能追加がしやすくなります。
+
+アプリケーションの :file:`urls.py`
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:file:`app/chat/urs.py` を作りましょう。
+
+.. code-block:: shell
+
+    $ touch chat/urls.py
+
+.. code-block:: python
+    :caption: app/chat/urls.py
+    :linenos:
+
+    from django.urls import path
+
+    from chat import views
+
+    app_name = "chat"
+
+    urlpatterns = [
+        path("", views.home, name="home"),
+    ]
+
+このURL設定は、「パスが ``""`` （空文字列）のとき、:file:`chat/views.py` の ``home`` （関数）を呼び出す」としています。
+
+:file:`chat/views.py` はアプリケーション作成時にできていますが、中身は空なので、 ``views.home`` がないというエラー（``AttributeError``）が送出されます（まだサーバは動いていません）。
+
+.. hint:: 5行目の ``app_name`` もDjangoで一般的なプラクティスの1つです。
+    複数のアプリケーションで同じ ``name`` のURL設定があったとしても、``<app_name>:<name>`` として区別できます。
+
 真っ白な画面を表示（エラーがない状態）
 
 テンプレートにHTMLを書く
