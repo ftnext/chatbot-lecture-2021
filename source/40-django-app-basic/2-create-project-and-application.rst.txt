@@ -5,7 +5,7 @@ Djangoのインストール
 ----------------------------------------
 
 ``ChatterBot`` をインストールした仮想環境を有効にします。
-これまでにPython 3.7系で仮想環境を作っています。
+これまでにPython 3.7系で仮想環境を作っています（:ref:`chatbot_environment`）。
 
 .. code-block:: shell
 
