@@ -1,11 +1,36 @@
-プロジェクト・アプリケーション作成
+プロジェクト／アプリケーション作成
 ========================================
 
-chatterbotを使った仮想環境にインストール
+Djangoのインストール
+----------------------------------------
+
+``ChatterBot`` をインストールした仮想環境を有効にします。
+これまでにPython 3.7系で仮想環境を作っています。
 
 .. code-block:: shell
 
+    $ cd ~/programming/chatbot
+    $ source env/bin/activate
     $ pip install 'Django<4'
+
+インストールしたことの確認
+
+.. code-block:: shell
+
+    $ django-admin --version
+    3.2.9
+
+脱線：Djangoのバージョンについて
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+https://www.djangoproject.com/download/ のSupported Versions
+
+LTS＝long-term support（長期サポート）
+
+- 2系のLTS（2.2.x）はサポートが2022年4月まで
+- 3系のLTS（3.2.x）が登場しているので、 **DjangoでWebアプリを新規に作るなら3.2.x** がオススメ
+
+8ヶ月おきに新しいバージョンが出ます（現在最新は3.2 → 4.0 → 4.1 → ...）
 
 プロジェクト作成
 
