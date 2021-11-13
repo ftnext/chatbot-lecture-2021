@@ -4,18 +4,7 @@ Django基礎（チャットボットをWebアプリにするための準備）
 
 .. include:: 0-intro.rst.txt
 
-DjangoによるWebアプリ
-========================================
-
-.. raw:: html
-
-    <iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe>
-
-押さえておきたいポイント
-
-- URL設定
-- ビュー
-- テンプレート
+.. include:: 1-django-overview.rst.txt
 
 プロジェクト・アプリケーション作成
 ========================================
