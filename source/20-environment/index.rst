@@ -44,6 +44,13 @@ Pythonのバージョン
 
 プロンプトの ``(env)`` は仮想環境が有効になった状態を示します。
 
+.. tip::
+    :command:`source` コマンドは :command:`.` と簡略化できます（:command:`. env/bin/activate`）。
+
+    :file:`env/bin/activate` はシェルスクリプトで、:command:`source` コマンドで実行しています。
+
+.. note:: 仮想環境を無効にする場合は :command:`deactivate` コマンドを入力します。
+
 ``ChatterBot`` インストール
 ========================================
 
