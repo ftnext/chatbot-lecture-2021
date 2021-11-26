@@ -7,8 +7,54 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <title>Chatbot app</title>
+    <style>
+      .log-window {
+        max-width: 500px;
+        max-height: 300px;
+        overflow-y: scroll;
+      }
+    </style>
   </head>
   <body>
     <h1>Talk with chatbot</h1>
+    <div id="chat-log" class="log-window"></div>
+
+    <form method="POST" action="{% url 'chat:bot_response' %}">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Send</button>
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      const chatLog = $("#chat-log");
+
+      function createRow(text) {
+        const row = $("<p></p>");
+        row.text(text);
+        chatLog.append(row);
+      }
+
+      $("form").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+
+        $.ajax({
+          url: form.prop("action"),
+          type: form.prop("method"),
+          data: form.serialize(),
+          dataType: "text",
+        })
+          .done(function (statement) {
+            const input = $("#id_message");
+            createRow("You -> " + input.val());
+            createRow("bot: " + statement);
+            input.val("");
+            chatLog[0].scrollTop = chatLog[0].scrollHeight;
+          })
+          .fail(function () {
+            window.alert("もう一度やり直してください");
+          });
+      });
+    </script>
   </body>
 </html>
