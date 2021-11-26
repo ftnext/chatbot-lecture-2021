@@ -16,5 +16,5 @@ def bot_response(request):
         if form.is_valid():
             response_message = form.data["message"]
             http_response = HttpResponse()
-            http_response.write(f"bot: {response_message}")
+            http_response.write(response_message)
             return http_response

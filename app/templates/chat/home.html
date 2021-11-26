@@ -47,7 +47,7 @@
           .done(function (statement) {
             const input = $("#id_message");
             createRow("You -> " + input.val());
-            createRow(statement);
+            createRow("bot: " + statement);
             input.val("");
             chatLog[0].scrollTop = chatLog[0].scrollHeight;
           })
