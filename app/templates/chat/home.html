@@ -26,17 +26,17 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-      var chatLog = $("#chat-log");
+      const chatLog = $("#chat-log");
 
       function createRow(text) {
-        var row = $("<p></p>");
+        const row = $("<p></p>");
         row.text(text);
         chatLog.append(row);
       }
 
       $("form").submit(function (event) {
         event.preventDefault();
-        var form = $(this);
+        const form = $(this);
 
         $.ajax({
           url: form.prop("action"),
@@ -45,7 +45,7 @@
           dataType: "text",
         })
           .done(function (statement) {
-            var input = $("#id_message");
+            const input = $("#id_message");
             createRow("You -> " + input.val());
             createRow(statement);
             input.val("");
