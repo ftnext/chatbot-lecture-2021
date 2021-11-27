@@ -1,27 +1,62 @@
 チャットボットとやり取りできる画面を作る
 ========================================
 
+http://127.0.0.1:8000/ で表示される画面にメッセージ入力欄を作ります。
+
+メッセージ入力欄はHTMLの ``form`` タグで実装します。
+https://developer.mozilla.org/ja/docs/Web/HTML/Element/form
+
+HTMLを書いてもいいのですが、Djangoがサポートしているフォーム（**Djangoフォーム**）を使います。
+Djangoの流儀に沿ってPythonを書けば、HTMLのフォームができあがります。
+（個人的な経験ですが、フォームのためにテンプレートに長くHTMLを書いたあとで、DjangoフォームにしておけばPythonで済ませられたことに気づき、Djangoフォームを選んでいればもっと開発しやすかったなと感じました）
+
 フォーム
 --------------------
+
+``chat`` アプリケーションに :file:`forms.py` を作ります。
+
+:command:`touch chat/forms.py`
 
 .. literalinclude:: ../../app/chat/forms.py
     :language: python
     :caption: app/chat/forms.py
+    :linenos:
+
+Djangoが提供する ``Form`` クラスを継承して、 ``ChatMessageForm`` クラスを定義します（4行目）。
+フォームの入力欄はテキストが入力できる ``CharField`` のみとします（入力必須で、100文字まで）（5行目）。
+
+https://docs.djangoproject.com/ja/3.2/ref/forms/fields/#charfield
 
 テンプレートにフォームを表示
 ----------------------------------------
 
+- ビューでフォームのインスタンスを作り、テンプレートに渡します
+- テンプレートはフォームを表示します
+
 ビュー
+^^^^^^^^^^^^^^^^^^^^
 
 .. literalinclude:: ../../app/chat/views.py
     :language: python
     :caption: app/chat/views.py
     :lines: 4-10
     :emphasize-lines: 1,6,7
+    :linenos:
+
+:file:`chat/forms.py` に作った ``ChatMessageForm`` をインスタンス化します（5行目）。
+``render`` の第3引数に辞書（``context`` という名前にしました）を渡します（7行目）。
+``context`` はビューの ``form`` （``ChatMessageForm`` インスタンス）を ``form`` という名前で渡します（6行目）。
+テンプレートとビューとで異なる名前を設定することもできますが、混乱を避けるため、私は揃えることが多いです。
 
 テンプレート
+^^^^^^^^^^^^^^^^^^^^
+
+空っぽの ``chat/home.html`` を以下のようにします。
 
 .. code-block:: html
+    :caption: templates/chat/home.html
+    :emphasize-lines: 14-17
+    :linenos:
 
     <!DOCTYPE html>
     <html lang="ja">
@@ -42,3 +77,22 @@
         </form>
       </body>
     </html>
+
+``<body>`` の部分に注目してください（``<head>`` については説明を省略します）。
+
+``{{ form }}`` とすればHTMLにメッセージ入力欄が表示されます（テンプレートに変数を埋め込む書き方です）。
+Djangoフォームではinputができるので、``<form>`` タグと ``<button>`` タグは書く必要があります。
+
+.. note:: 参考情報
+
+    * `理解して使いこなすDjangoのForm機能 <https://www.slideshare.net/KyutatsuNishiura/djangoform2021-django-congress>`_
+
+      * `Django Congress JP 2021 <https://djangocongress.jp/>`_ の発表資料です（YouTubeにアーカイブもあります）
+      * Djangoフォームについて詳細に説明しています
+      * 0章、Django shellでフォームを扱うのはわかりやすいと思いました（ここだけ確認、オススメです！）
+
+    * `現場で使える Django のセキュリティ対策 <https://speakerdeck.com/akiyoko/django-security-measures-for-business-djangocon-jp-2019?slide=65>`_
+
+      * `Django Congress JP 2019 <https://djangocongress.jp/2019>`_ の発表資料です（YouTubeにアーカイブもあります）
+      * ``{% csrf_token %}`` がなぜ必要なのかも解説もあります
+      * クロスサイトリクエストフォージェリ（＝CSRF）への対策のためなのですが、詳しくはスライド63〜を見てみてください
