@@ -1,14 +1,215 @@
 画面遷移なしでチャットボットとやり取りできる
 ================================================================================
 
-画面遷移なしにする：ajax（JavaScriptを書く）。``jQuery`` を使用
+フォームを送信すると、チャットボットはオウム返ししますが、画面繊維を伴います。
+**フォームがある画面にチャットボットのやり取りを出し**、チャットが蓄積するようにします。
 
-テンプレートの ``<script>`` タグを書いていく
+画面遷移なしにするには **Ajax** （Asynchronous JavaScript And XML）を使います。
+テンプレートの :file:`chat/home.html` にJavaScriptを書いていきます。
+
+今回は ``jQuery`` というライブラリを使用してAjaxによる通信を組み込みます。
+（現在のJavaScript周りの状況を見ると ``jQuery`` は下火ですが、学習コストは小さいので今回採用しています。VueやReactでやってもらってもかまいません）
+
+使うメソッドについては次のメモにまとめました：
+https://scrapbox.io/nikkie-memos/jQuery%E3%83%A1%E3%83%A2%EF%BC%88%E3%83%81%E3%83%A3%E3%83%83%E3%83%88%E3%83%9C%E3%83%83%E3%83%88Django%E3%82%A2%E3%83%97%E3%83%AA%EF%BC%89
+
+フォームが送信されたときの処理を指定する
+----------------------------------------
+
+テンプレートの ``<script>`` タグを書いていきます。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :linenos:
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $("form").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+    
+        console.log(form.prop("action"));
+        console.log(form.prop("method"));
+        console.log(form.serialize());
+      });
+    </script>
+
+ライブラリ ``jQuery`` をCDN（Contents Delivery Network）から読み込みます（1行目）。
+ドキュメント https://jquery.com/download/#using-jquery-with-a-cdn の中からGoogleのAPIを選びました。
+この行により ``jQuery`` のメソッドが使えるようになります。
+
+3行目で、フォームの送信というイベントについて処理する関数（ハンドラ）を登録します。
+
+4行目 ``event.preventDefault()`` で画面遷移というフォームのデフォルトの挙動を無効化しています。
+
+ここではフォームの属性の値やフォームに入力される値の取得の仕方を確認するために、ログ出力しました（5行目〜）。
+
+ブラウザで http://127.0.0.1:8000/ を開き、開発者ツールのコンソールを開いてから、メッセージを送信してみてください。
+``preventDefault`` の効果で **画面は切り替わらず** に、ログが出力されます。
+
+.. list-table:: 開発者ツールのコンソールで確認した値
+    
+    * - ``form.prop("action")``
+      - http://127.0.0.1:8000/bot-response/
+    * - ``form.prop("method")``
+      - post
+    * - ``form.serialize()``
+      - csrfmiddlewaretoken=省略&message=hello%20world
+
+``form.serialize()`` は日本語をエンコードします（ブラウザのURL欄の日本語と同じです）。
+
+フォームが送信されたときにAjaxで通信する
+----------------------------------------
+
+上で確認した項目を使い、チャットボットが応答するURLにAjaxで通信します。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :linenos:
+    :emphasize-lines: 7,13-15
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $("form").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+    
+        $.ajax({
+          url: form.prop("action"),
+          type: form.prop("method"),
+          data: form.serialize(),
+          dataType: "text",
+        })
+          .done(function (statement) {
+            console.log(statement);
+          });
+    </script>
+
+フォームの ``action`` 属性のURLに、``method`` 属性のHTTPメソッドで、フォームに入力されたデータを送ります。
+成功した場合、``done`` イベントが発火し、登録されているハンドラにより返ってきたレスポンスをコンソールに出力します（14行目）。
+
+ブラウザで http://127.0.0.1:8000/ を開き、開発者ツールのコンソールを開いてから、メッセージを送信します。
+送ったのと同じメッセージがコンソールに表示されます。
+
+コンソールを使って、ユーザとチャットボットがやり取りしているようにログ出力してみましょう。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :linenos:
+    :emphasize-lines: 14-17
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      $("form").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+    
+        $.ajax({
+          url: form.prop("action"),
+          type: form.prop("method"),
+          data: form.serialize(),
+          dataType: "text",
+        })
+          .done(function (statement) {
+            const input = $("#id_message");
+            console.log("You -> " + input.val());
+            console.log("bot: " + statement);
+            input.val("");
+          });
+    </script>
+
+id ``id_message`` はDjangoにより、メッセージ入力の ``input`` 要素に設定されています
+（フォームのクラス定義の中で ``message`` という名前にしたので、 ``id_message`` となりました）。
+
+.. code-block:: html
+    :caption: フォームの ``input`` 要素には ``id`` が指定されている
+
+    <input type="text" name="message" maxlength="100" required="" id="id_message">
+
+IDを指定して、この ``input`` 要素を ``jQuery`` で取得します。
+``val`` は ``input`` 要素のvalue（入力された文字列）です。
+ユーザの入力をログ出力し、チャットボットのレスポンスも出力したあとで、フォームの入力を空文字列とし（17行目）、続けてやり取りできるようにします。
+
+フォームが送信されたあと、画面にチャットを表示する
+--------------------------------------------------------------------------------
+
+ログ出力したフォーマットで画面に出力しましょう。
+
+まず、フォームの上に、**チャットの履歴を表示** するための ``<div>`` 要素を追加します。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :emphasize-lines: 2
+
+    <h1>Talk with chatbot</h1>
+    <div id="chat-log" class="log-window"></div>
+
+    <form method="POST" action="{% url 'chat:bot_response' %}">
+      <!-- 以下、省略 -->
+
+Ajaxの通信が成功したときにチャットの履歴を表示する（画面に書き足す）ようにします。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :linenos:
+    :emphasize-lines: 3, 5-8, 23-24
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+      const chatLog = $("#chat-log");
+
+      function createRow(text) {
+        const row = $("<p></p>");
+        row.text(text);
+        chatLog.append(row);
+      }
+
+      $("form").submit(function (event) {
+        event.preventDefault();
+        const form = $(this);
+    
+        $.ajax({
+          url: form.prop("action"),
+          type: form.prop("method"),
+          data: form.serialize(),
+          dataType: "text",
+        })
+          .done(function (statement) {
+            const input = $("#id_message");
+            createRow("You -> " + input.val());
+            createRow("bot: " + statement);
+            input.val("");
+          });
+    </script>
+
+画面の表示を変えるために ``createRow`` 関数を作りました。
+これは ``id=chat-log`` の要素（＝上で加えた ``<div>`` 要素）の中に、 ``<p>`` 要素を追加します。
+``<p>`` の文字列は ``createRow`` 関数の引数です。
+``jQuery`` を使って ``<p>`` タグを作って、 ``<div>`` 要素の中に **付け足し** ています。
+
+Ajaxが成功したときのハンドラは、``console.log`` から ``createRow`` 関数に差し替えました（22, 23行目）。
+
+ブラウザで http://127.0.0.1:8000/ を開くと、オウム返しするチャットボットとやり取りできます！！
 
 最終形
+----------------------------------------
+
+:file:`chat/home.html` は最終的には以下のようになります。
+変更箇所を優先して示したため、一部のタグ（``<title>`` など）は省略しています。
 
 .. literalinclude:: ../../app/templates/chat/home.html
     :language: html
-    :caption: app/templates/chat/home.html
-    :lines: 19-58
-    :emphasize-lines: 2, 4
+    :caption: templates/chat/home.html
+    :lines: 3,10-17,18-59
+    :emphasize-lines: 2-8,12,44,46-48
+    :linenos:
+
+(1)フォームの上のチャット履歴表示部分は、高さを決めて自動でスクロールするようにしました。
+12行目でclassを設定し、 ``<style>`` タグで最大の高さと、それを超えたときにスクロールするように設定します（2〜8行目）。
+Ajax通信が成功したときのイベントハンドラに44行目を追加し、チャット履歴は常に一番下までスクロールした状態（＝最新のメッセージとそれへのボットの応答が見える状態）としています。
+
+(2)Ajax通信が失敗するときもあるので、 ``fail`` イベントのハンドラを登録しました（46〜48行目）。
+
+以上で、単純なチャットボットとやり取りするWebアプリが手元のPCで動くようになりました！
+**このあとはチャットボットをより賢くしていきます** （初回で導入した ``chatterbot`` ライブラリを使います）。
+Djangoについてはあまり触らず、チャットボットを賢くすることにフォーカスしていきます。
