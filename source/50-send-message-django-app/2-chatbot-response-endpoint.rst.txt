@@ -1,13 +1,146 @@
-チャットボットが応答するURLを用意する
+オウム返しするチャットボットを作る
 ========================================
 
-- http://127.0.0.1:8000/bot-response/ （フォームの ``action`` 属性に設定）
+フォームを表示できるようになりました！
+しかし、「こんにちは」のように入力して :guilabel:`Send` をクリックすると、入力した文字が消えます。
+今の設定ではこれは正常な挙動です。
+
+チャットボットが応答するURLを用意する
+----------------------------------------
+
+チャットボットが応答するようにしましょう。
+単純なチャットボットとして、オウム返しするチャットボットで考えます。
+
+- 追加するURL：http://127.0.0.1:8000/bot-response/
+
+  - URL設定を追加する
+  - フォームの ``action`` 属性に設定（入力をチャットボットに送る）
+
 - フォーム入力されたデータの **POST** リクエストに対して、同じ ``message`` を返す
 
+  - ビューに関数を追加する
+
 URL設定
+----------------------------------------
+
+:file:`chat/urls.py` の ``urlpatterns`` が指すリストに ``path`` の行を1つ追加します。
+
+.. literalinclude:: ../../app/chat/urls.py
+    :language: python
+    :caption: app/chat/urls.py
+    :emphasize-lines: 9
+    :linenos:
+
+:file:`chat/views.py` に ``bot_response`` という関数がまだないのでエラーとなり、サーバが起動しません。
+
+.. hint:: ``urlpatterns`` の指す値は **リスト** なので、末尾のカンマが落ちていると ``SyntaxError`` が送出されます。
+
+    .. code-block:: python
+
+        urlpatterns = [
+            path("", views.home, name="home")  # 末尾のカンマ忘れに注意！
+            path("bot-response/", views.bot_response, name="bot_response"),
+        ]
 
 ビュー
+----------------------------------------
+
+エラーを解消するための実装
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``bot_response`` 関数を作ります。
+
+ビューの関数は引数に ``request`` を受け取り、Djangoの ``HttpResponse`` を返します。
+
+.. code-block:: python
+
+    from django.http import HttpResponse  # importの行に追加
+
+
+    def bot_response(request):
+        response = HttpResponse()
+        response.write("レスポンスです")
+        return response
+
+``HttpResponse`` の ``write`` メソッドでレスポンスの内容を書き込めます：
+https://docs.djangoproject.com/ja/3.2/ref/request-response/#django.http.HttpResponse.write
+
+.. hint:: ここでフォームの ``action`` 属性を設定すると、Sendしたあと「レスポンスです」とブラウザに表示されます。
+
+    .. code-block:: html
+
+        <form method="POST" action="http://127.0.0.1:8000/bot-response/">
+
+    のちほど設定について案内します（もっといい設定方法があります）。
+
+.. note:: ``home`` 関数で呼び出している ``render`` も実は ``HttpResponse`` を返しています。
+    https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#a-shortcut-render
+
+オウム返しするための実装
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+引数 ``request`` には **フォームから送信されたデータが含まれる** ので、それを取り出して、レスポンスに含めます。
+この実装により、決め打ちのレスポンスからオウム返しのレスポンスに変わります。
+
+.. literalinclude:: ../../app/chat/views.py
+    :language: python
+    :caption: app/chat/views.py
+    :lines: 1-4
+    :emphasize-lines: 1
+
+.. literalinclude:: ../../app/chat/views.py
+    :language: python
+    :caption: app/chat/views.py
+    :pyobject: bot_response
+    :emphasize-lines: 2-5
+    :linenos:
+
+``request.method`` でPOSTリクエストかどうか判定します（2行目）。
+フォームから送信するとPOSTリクエストになります（``method="POST"`` と指定しているためです）。
+
+POSTリクエストでは、``request.POST`` にフォームから送信されたデータがあります。
+これを渡して ``ChatMessageForm`` のインスタンスを作ります（3行目）。
+
+4行目はフォームから送信されたデータの検証です。
+
+検証がパスした場合、 ``data`` 属性（辞書）のキー ``"message"`` の値を取得します（5行目）。
+これがフォームに入力されたメッセージです。
+Djangoフォームで ``message = ...`` と指定したので、キーも ``"message"`` となります。
+
+.. note:: ``request`` についてドキュメントより
+
+        request.POST は辞書のようなオブジェクトです。
+
+    https://docs.djangoproject.com/ja/3.2/intro/tutorial04/#write-a-minimal-form
 
 テンプレート
+----------------------------------------
 
-フォームからメッセージを送ると画面遷移を伴う状態
+``<form>`` タグの ``action`` 属性を指定します。
+
+.. code-block:: html
+    :caption: templates/chat/home.html
+    :emphasize-lines: 1
+
+        <form method="POST" action="{% url 'chat:bot_response' %}">
+          {% csrf_token %} {{ form.as_p }}
+          <button type="submit">Send</button>
+        </form>
+
+``{% url %}`` はDjangoのテンプレートで使えるタグの1つです。
+第1引数は、URL設定にある ``name`` を指定します。
+``'chat:bot_response'`` は ``'<app_name>:<name>'`` という形式です。
+chat アプリケーションの ``name="bot_response"`` というURL設定が見つかります。
+結果として、 ``action`` 属性に http://127.0.0.1:8000/bot-response/ が設定されます。
+
+.. note:: なぜ ``{% url %}`` を使うのか？
+
+    ずばり、**変更しやすくする** ためです。
+    URLを直接書く（ハードコードする）と、パスの文字列の変更（例 ``"bot-response/"`` → ``"response/"``）に追従させるのが大変です。
+    ``{% url %}`` タグで ``name`` から逆引きすることで、パスの文字列を変えやすくしています。
+
+        このハードコードされた、密結合のアプローチの問題は、プロジェクトにテンプレートが多数ある場合、URLの変更が困難になってしまうことです。
+
+    https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#removing-hardcoded-urls-in-templates
+
+以上で、フォームからメッセージを送ると、画面遷移し、オウム返しされたメッセージが表示されるようになりました！
