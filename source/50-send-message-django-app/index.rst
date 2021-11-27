@@ -8,17 +8,4 @@
 
 .. include:: 2-chatbot-response-endpoint.rst.txt
 
-画面遷移なしでチャットボットとやり取りできる
-================================================================================
-
-画面遷移なしにする：ajax（JavaScriptを書く）。``jQuery`` を使用
-
-テンプレートの ``<script>`` タグを書いていく
-
-最終形
-
-.. literalinclude:: ../../app/templates/chat/home.html
-    :language: html
-    :caption: app/templates/chat/home.html
-    :lines: 19-58
-    :emphasize-lines: 2, 4
+.. include:: 3-chat-ajax.rst.txt
