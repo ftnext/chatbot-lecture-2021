@@ -142,7 +142,7 @@ IDを指定して、この ``input`` 要素を ``jQuery`` で取得します。
     :emphasize-lines: 2
 
     <h1>Talk with chatbot</h1>
-    <div id="chat-log" class="log-window"></div>
+    <div id="chat-log"></div>
 
     <form method="POST" action="{% url 'chat:bot_response' %}">
       <!-- 以下、省略 -->
@@ -180,6 +180,7 @@ Ajaxの通信が成功したときにチャットの履歴を表示する（画�
             createRow("bot: " + statement);
             input.val("");
           });
+      });
     </script>
 
 画面の表示を変えるために ``createRow`` 関数を作りました。
