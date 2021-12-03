@@ -85,15 +85,22 @@ https://docs.djangoproject.com/ja/3.2/ref/request-response/#django.http.HttpResp
 .. literalinclude:: ../../app/chat/views.py
     :language: python
     :caption: app/chat/views.py
-    :lines: 1-4
+    :lines: 3-6
     :emphasize-lines: 1
 
-.. literalinclude:: ../../app/chat/views.py
-    :language: python
+.. code-block:: python
     :caption: app/chat/views.py
-    :pyobject: bot_response
     :emphasize-lines: 2-5
     :linenos:
+
+    def bot_response(request):
+        if request.method == "POST":
+            form = ChatMessageForm(request.POST)
+            if form.is_valid():
+                response_message = form.data["message"]
+                http_response = HttpResponse()
+                http_response.write(response_message)
+                return http_response
 
 ``request.method`` でPOSTリクエストかどうか判定します（2行目）。
 フォームから送信するとPOSTリクエストになります（``method="POST"`` と指定しているためです）。
