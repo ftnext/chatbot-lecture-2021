@@ -16,7 +16,30 @@ https://scrapbox.io/nikkie-memos/jQuery%E3%83%A1%E3%83%A2%EF%BC%88%E3%83%81%E3%8
 フォームが送信されたときの処理を指定する
 ----------------------------------------
 
-テンプレートの ``<script>`` タグを書いていきます。
+テンプレートに ``<script>`` タグを書いていきます。
+
+HTMLの ``<body>`` タグの末尾に書きます。
+
+.. code-block:: html
+
+    <!DOCTYPE html>
+    <html lang="ja">
+      <head>
+        <!-- 省略 -->
+      </head>
+      <body>
+        <h1>Talk with chatbot</h1>
+
+        <form method="POST">
+          {% csrf_token %} {{ form.as_p }}
+          <button type="submit">Send</button>
+        </form>
+      </body>
+
+      <!-- ここに script タグを書いていきます -->
+    </html>
+
+まずは以下のように書いてください。
 
 .. code-block:: html
     :caption: templates/chat/home.html
