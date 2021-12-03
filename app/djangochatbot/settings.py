@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     "chat.apps.ChatConfig",
+
+    "chatterbot.ext.django_chatterbot",
 ]
 
 MIDDLEWARE = [
@@ -131,3 +133,17 @@ STATIC_ROOT = BASE_DIR / "static"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ChatterBot settings
+from chatterbot.languages import JPN
+
+
+class CustomJPN(JPN):
+    ISO_639_1 = "ja_core_news_sm"
+
+
+CHATTERBOT = {
+    "name": "Training from corpus bot on Web app",
+    "tagger_language": CustomJPN
+}
