@@ -39,7 +39,7 @@ https://docs.djangoproject.com/ja/3.2/ref/forms/fields/#charfield
 .. literalinclude:: ../../app/chat/views.py
     :language: python
     :caption: app/chat/views.py
-    :lines: 4-10
+    :lines: 6-7,10-14
     :emphasize-lines: 1,6,7
     :linenos:
 
