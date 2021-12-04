@@ -1,4 +1,66 @@
-チャットボットが応答できる
+訓練したチャットボットとやり取りできるようにする
 ==================================================
 
-* ビュー（get_responseする）
+カスタムコマンドでチャットボットを訓練したら、ユーザーがやり取りできるようにしましょう。
+オウム返しするチャットボットと差し替えます。
+
+これまでにチャットボットの応答をWebアプリに表示する部分を作成済みなので、 **チャットボットを差し替えるだけ** です。
+アプリケーションの :file:`views.py` を修正します。
+
+チャットボットが応答するようにビューを変更
+--------------------------------------------------
+
+:file:`my_chatbot.py` でチャットボットとやり取りする部分の実装は以下のようになっています。
+
+.. literalinclude:: ../../cli/corpus_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :lines: 19
+    :lineno-start: 19
+
+``chatbot`` の ``get_response`` メソッドを呼んでいますね。
+
+Webアプリでも、ビューの ``bot_response`` 関数も同様の実装にします
+（フォームから ``bot-response/`` にPOSTリクエストが送られるたびに呼ばれる関数でしたね）。
+
+変更前
+^^^^^^^^^^
+
+.. code-block:: python
+    :caption: app/chat/views.py
+    :emphasize-lines: 5
+    :linenos:
+
+    def bot_response(request):
+        if request.method == "POST":
+            form = ChatMessageForm(request.POST)
+            if form.is_valid():
+                response_message = form.data["message"]
+                http_response = HttpResponse()
+                http_response.write(response_message)
+                return http_response
+
+オウム返しするチャットボットなので、入力されたテキストをそのまま返しています。
+
+変更後
+^^^^^^^^^^
+
+``ChatBot`` インスタンスを初期化します。
+ビュー関数が呼び出されるたびに初期化したくないので、関数の外側に書いています。
+
+.. literalinclude:: ../../app/chat/views.py
+    :language: python
+    :caption: app/chat/views.py
+    :lines: 1-8
+    :emphasize-lines: 1-2,8
+
+入力されたテキストを ``get_response`` メソッドに渡し、その返り値をレスポンスとして返します。
+
+.. literalinclude:: ../../app/chat/views.py
+    :language: python
+    :caption: app/chat/views.py
+    :pyobject: bot_response
+    :linenos:
+    :emphasize-lines: 5-6
+
+:command:`python manage.py runserver` してから http://127.0.0.1:8000/ をブラウザで開くと、訓練したチャットボットとやり取りできます！！
