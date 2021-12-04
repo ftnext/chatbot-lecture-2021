@@ -23,6 +23,11 @@
 Webアプリでも、ビューの ``bot_response`` 関数も同様の実装にします
 （フォームから ``bot-response/`` にPOSTリクエストが送られるたびに呼ばれる関数でしたね）。
 
+参考
+
+- https://chatterbot.readthedocs.io/en/stable/django/views.html
+- https://github.com/gunthercox/ChatterBot/blob/master/examples/django_app/example_app/views.py
+
 変更前
 ^^^^^^^^^^
 
