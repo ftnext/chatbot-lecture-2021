@@ -1,0 +1,12 @@
+* はじめの一歩のコーパス訓練思い出し
+
+  * gitHubからのインストールの対処法共有
+
+* 実装
+
+  * Djangoモデルの紹介（ChatterBot側で操作する）
+
+.. literalinclude:: ../../app/chat/management/commands/bot_train.py
+    :language: python
+    :caption: chat/management/commands/bot_train.py
+    :linenos:

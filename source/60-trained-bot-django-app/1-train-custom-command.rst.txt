@@ -81,16 +81,3 @@ https://docs.djangoproject.com/ja/3.2/howto/custom-management-commands/
 コマンドラインに出力するために ``self.stdout.write`` を使います。
 
     管理コマンドを利用してコンソールへの標準出力を行いたい場合、stdout と stderr に直接文字列を渡すのではなく、self.stdout および self.stderr を利用するべきです。（上と同じリンクより）
-
-* はじめの一歩のコーパス訓練思い出し
-
-  * gitHubからのインストールの対処法共有
-
-* 実装
-
-  * Djangoモデルの紹介（ChatterBot側で操作する）
-
-.. literalinclude:: ../../app/chat/management/commands/bot_train.py
-    :language: python
-    :caption: chat/management/commands/bot_train.py
-    :linenos:
