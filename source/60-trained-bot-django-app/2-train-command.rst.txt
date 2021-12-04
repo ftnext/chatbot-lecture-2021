@@ -1,10 +1,119 @@
-* はじめの一歩のコーパス訓練思い出し
+チャットボット訓練コマンド
+==================================================
 
-  * gitHubからのインストールの対処法共有
+:ref:`corpus_train_ja_bot` で行ったのと同じ訓練を、Webアプリでもできるようにします。
+:command:`bot_train` コマンドを実装します。
 
-* 実装
+以下のファイルを変更します。
 
-  * Djangoモデルの紹介（ChatterBot側で操作する）
+* プロジェクトの :file:`settings.py`
+* アプリケーションの :file:`management/commands/bot_train.py`
+
+設定変更
+----------------------------------------
+
+* ``INSTALLED_APPS`` にChatterBotのDjangoアプリケーションを追加
+* ChatterBot用の設定を示す変数を追加
+
+``INSTALLED_APPS``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. literalinclude:: ../../app/djangochatbot/settings.py
+    :language: python
+    :caption: app/djangochatbot/settings.py
+    :lines: 38-49
+    :emphasize-lines: 11
+
+ChatterBot用の設定追加
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:ref:`corpus_train_ja_bot` で作ったスクリプトは、以下のように ``ChatBot`` クラスのインスタンスを初期化しています。
+
+.. literalinclude:: ../../cli/corpus_train_ja.py
+    :language: python
+    :caption: my_chatbot.py
+    :lines: 11
+    :lineno-start: 11
+
+この引数をプロジェクトの :file:`settings.py` で指定します。
+末尾に追加してください。
+
+.. literalinclude:: ../../app/djangochatbot/settings.py
+    :language: python
+    :caption: app/djangochatbot/settings.py
+    :lines: 138-149
+
+辞書を指す変数 ``CHATTERBOT`` を追加しています。
+この変数は、Webアプリで ``ChatBot`` クラスのインスタンスを初期化するときに使われます。
+実は ``ChatBot`` というイニシャライザの第1引数は ``name`` です。
+
+.. code-block:: python
+    :emphasize-lines: 2
+
+    chatbot = ChatBot(
+        name="Training from corpus bot",
+        tagger_language=CustomJPN
+    )
+
+:file:`my_chatbot.py` 同様に日本語を扱うように指定しています（``tagger_language``）。
+説明は :ref:`chatterbot_first_step` を参照してください。
+
+訓練するカスタムコマンドを実装
+----------------------------------------
+
+.. literalinclude:: ../../app/chat/management/commands/bot_train.py
+    :language: python
+    :caption: chat/management/commands/bot_train.py
+    :lines: 1-2,4-8,11,19-24
+    :linenos:
+    :emphasize-lines: 1-3,9,11-12
+
+9〜11行目は :file:`my_chatbot.py` でコーパスから訓練しているコードと同様です。
+13行目は訓練終了を出力しています。
+
+.. hint:: ``**settings.CHATTERBOT`` について
+
+    この書き方は初めて見たときに混乱するかもしれません。
+    辞書に ``**`` を付けて、関数に渡すと、``辞書のキー=値`` と **キーワード引数を渡した** ことになります。
+
+    .. code-block:: python
+
+        >>> def f(a, b):
+        ...   print("a", a)
+        ...   print("b", b)
+        ...
+        >>> f(a=1, b=2)
+        a 1
+        b 2
+        >>> d = {"a": 1, "b": 2}
+        >>> f(**d)  # f(a=1, b=2) という呼び出しと同じになる
+        a 1
+        b 2
+
+訓練コマンドを動かすために
+----------------------------------------
+
+* データベースのセットアップ
+* ライブラリ ``chatterbot_corpus`` インストール
+
+後者のインストールについては :ref:`corpus_train_ja_bot` に対処法を追加しています。
+
+データベースのセットアップ
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+ChatterBotは訓練に使うコーパスを **データベースに保存** します。
+
+Djangoでデータベースの操作を担うのが **モデル** です。
+
+.. raw:: html
+
+    <iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html#/12/5" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe>
+
+今回の実装の範囲で、私たちがモデルを使ってデータベースを操作することはありませんが、仕組みとして紹介しました
+（ChatterBot側でモデルを使ったコードが用意されています）。
+
+訓練コマンドの最終形
+----------------------------------------
 
 .. literalinclude:: ../../app/chat/management/commands/bot_train.py
     :language: python
