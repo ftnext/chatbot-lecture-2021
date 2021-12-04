@@ -1,0 +1,38 @@
+====================================================================
+ChatterBotのチャットボットとWebアプリでやり取りできるようにする
+====================================================================
+
+* 訓練
+* 応答
+
+カスタムコマンド
+==================================================
+
+.. code-block:: shell
+
+    $ mkdir -p chat/management/commands
+    $ touch chat/management/__init__.py
+    $ touch chat/management/commands/__init__.py
+    $ touch chat/management/commands/bot_train.py
+
+* 導入（python manage.py foobar）
+
+  * hello world
+
+* はじめの一歩のコーパス訓練思い出し
+
+  * gitHubからのインストールの対処法共有
+
+* 実装
+
+  * Djangoモデルの紹介（ChatterBot側で操作する）
+
+.. literalinclude:: ../../app/chat/management/commands/bot_train.py
+    :language: python
+    :caption: chat/management/commands/bot_train.py
+    :linenos:
+
+チャットボットが応答できる
+==================================================
+
+* ビュー（get_responseする）
