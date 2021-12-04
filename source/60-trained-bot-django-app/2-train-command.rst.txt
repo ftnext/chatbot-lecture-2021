@@ -24,6 +24,8 @@
     :lines: 38-49
     :emphasize-lines: 11
 
+参考：https://chatterbot.readthedocs.io/en/stable/django/index.html#installed-apps
+
 ChatterBot用の設定追加
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -42,6 +44,8 @@ ChatterBot用の設定追加
     :language: python
     :caption: app/djangochatbot/settings.py
     :lines: 138-149
+
+参考：https://chatterbot.readthedocs.io/en/stable/django/settings.html
 
 辞書を指す変数 ``CHATTERBOT`` を追加しています。
 この変数は、Webアプリで ``ChatBot`` クラスのインスタンスを初期化するときに使われます。
