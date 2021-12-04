@@ -119,3 +119,7 @@ Djangoでデータベースの操作を担うのが **モデル** です。
     :language: python
     :caption: chat/management/commands/bot_train.py
     :linenos:
+    :emphasize-lines: 3,9,12-17
+
+* 9行目の ``help`` 変数が指す文字列は :command:`python manage.py bot_train --help` で表示されます
+* すでに訓練されている場合、データベースに ``Statement`` が保存されています。保存が重複しないよう、*データベースに保存されたStatementをすべて削除する* という実装にしています（この ``Statement`` がモデルです）
