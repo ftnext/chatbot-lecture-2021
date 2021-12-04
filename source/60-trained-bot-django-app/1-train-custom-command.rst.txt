@@ -1,5 +1,30 @@
-カスタムコマンド
+チャットボット訓練コマンド
 ==================================================
+
+:ref:`corpus_train_ja_bot` で行ったのと同じ訓練を、Webアプリでもできるようにします。
+
+カスタムコマンド
+----------------------------------------
+
+Djangoの **カスタムコマンド** という仕組みを使います。
+アプリケーションごとにコマンドを持たされます。
+
+開発者が使えるよう、Djangoにデフォルトで用意されているコマンドがあります。
+:command:`python manage.py --help` でコマンドの一覧が見られます。
+
+- 例えば、:command:`runserver` は ``django`` アプリケーションのコマンドです。
+
+カスタムコマンドを実装して、このコマンド一覧にチャットボットを訓練するコマンドを追加します。
+
+カスタムコマンドに必要なディレクトリ構成
+----------------------------------------
+
+Djangoのカスタムコマンドは **ディレクトリ構成のルールが決まっています**。
+ルールに沿ってディレクトリとファイルを配置し、実装します。
+
+https://docs.djangoproject.com/ja/3.2/howto/custom-management-commands/
+
+    独自のコマンドを追加するためには、``management/commands``ディレクトリをアプリケーションに追加してください。
 
 .. code-block:: shell
 
@@ -8,9 +33,54 @@
     $ touch chat/management/commands/__init__.py
     $ touch chat/management/commands/bot_train.py
 
-* 導入（python manage.py foobar）
+:file:`__init__.py` はPythonパッケージにするために置きます。
+中身は空で大丈夫です。
 
-  * hello world
+:file:`chat/management/commands/bot_train.py` を編集していきます。
+
+初めてのカスタムコマンド！
+----------------------------------------
+
+まずは、簡単なカスタムコマンドを作りましょう。
+:file:`chat/management/commands/bot_train.py` に以下を書いてください。
+
+.. code-block:: python
+    :caption: chat/management/commands/bot_train.py
+    :linenos:
+
+    from django.core.management.base import BaseCommand
+
+
+    class Command(BaseCommand):
+        def handle(self, *args, **kwargs):
+            self.stdout.write("bot_trainコマンドです")
+
+実行してみましょう。
+
+.. code-block:: shell
+
+    $ python manage.py bot_train
+    bot_trainコマンドです
+
+:command:`python manage.py --help` で見られるコマンド一覧にも追加されていることが確認できます。
+
+プログラムの解説
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+アプリケーションの :file:`management/commands` に置いたファイルの名前がコマンド名になります（``bot_train``）。
+
+ファイル名以外にも、カスタムコマンドでは「こう実装してください」というルールが決まっています。
+
+    BaseCommand クラスもしくはその サブクラス の一つを継承した Command クラスを定義する必要が有ります。
+
+https://docs.djangoproject.com/ja/3.2/howto/custom-management-commands/
+
+これに沿って ``Command`` クラスを実装しています（4行目）。
+
+``Command`` クラスには ``handle`` というインスタンスメソッドを実装します。
+コマンドラインに出力するために ``self.stdout.write`` を使います。
+
+    管理コマンドを利用してコンソールへの標準出力を行いたい場合、stdout と stderr に直接文字列を渡すのではなく、self.stdout および self.stderr を利用するべきです。（上と同じリンクより）
 
 * はじめの一歩のコーパス訓練思い出し
 
