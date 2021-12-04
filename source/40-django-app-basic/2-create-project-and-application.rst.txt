@@ -165,7 +165,7 @@ http://127.0.0.1:8000/ をブラウザで開き、ロケットが動いている
 .. literalinclude:: ../../app/djangochatbot/settings.py
     :language: python
     :caption: app/djangochatbot/settings.py
-    :lines: 113-115
+    :lines: 115-117
 
 日本語・JSTに設定しました。
 
@@ -204,7 +204,7 @@ http://127.0.0.1:8000/ をブラウザで開くと、英語だった表示が日
 .. literalinclude:: ../../app/djangochatbot/settings.py
     :language: python
     :caption: app/djangochatbot/settings.py
-    :lines: 38-47
+    :lines: 38-46,49
     :emphasize-lines: 9
 
 発展：追加した文字列の意味

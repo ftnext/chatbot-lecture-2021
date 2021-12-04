@@ -191,7 +191,7 @@ HTMLとDjango独自のタグで書かれます（登壇資料のスライド60�
 .. literalinclude:: ../../app/djangochatbot/settings.py
     :language: python
     :caption: app/djangochatbot/settings.py
-    :lines: 61-75
+    :lines: 63-77
     :emphasize-lines: 4
 
 .. hint:: ``BASE_DIR`` は ``pathlib`` の ``Path`` オブジェクトです（:file:`settings.py` の上部で定義されています）。
