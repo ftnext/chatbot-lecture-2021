@@ -22,6 +22,7 @@ jobs:
       - name: Build html
         run: |
           make html
+          rm -r build/html/_sources
       - name: Deploy to GitHub Pages
         uses: ftnext/action-push-ghpages@v1.0.0-alpha
         with:
