@@ -16,6 +16,7 @@ Welcome to chatbot-lecture-2021's documentation!
    40-django-app-basic/index
    50-send-message-django-app/index
    60-trained-bot-django-app/index.rst
+   reference
 
 
 Indices and tables
