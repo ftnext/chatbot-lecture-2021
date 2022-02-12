@@ -24,7 +24,7 @@ jobs:
           make html
           rm -r build/html/_sources
       - name: Deploy to GitHub Pages
-        uses: ftnext/action-push-ghpages@v1.0.0-alpha
+        uses: ftnext/action-push-ghpages@v1.0.0
         with:
           build_dir: build/html
           github_token: ${{ secrets.GITHUB_TOKEN }}
