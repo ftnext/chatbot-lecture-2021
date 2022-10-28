@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatterBot はじめの一歩 &#8212; chatbot-lecture-2021  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="Django基礎（チャットボットをWebアプリにするための準備）" href="../40-django-app-basic/index.html" />
+    <link rel="prev" title="環境構築" href="../20-environment/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="chatterbot">
+<span id="chatterbot-first-step"></span><h1>ChatterBot はじめの一歩<a class="headerlink" href="#chatterbot" title="この見出しへのパーマリンク">¶</a></h1>
+<div class="section" id="id1">
+<h2>オウム返しするチャットボット（英語）<a class="headerlink" href="#id1" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id2">
+<h3>ライブラリのインストール<a class="headerlink" href="#id2" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s1">&#39;spacy&lt;3&#39;</span>
+$ python -m spacy download en
+</pre></div>
+</div>
+<p><a class="reference external" href="https://scrapbox.io/nikkie-memos/spaCy" rel="noopener noreferrer" target="_blank">https://scrapbox.io/nikkie-memos/spaCy</a></p>
+</div>
+<div class="section" id="id3">
+<h3>プログラム<a class="headerlink" href="#id3" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id28" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos"> 4</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span><span class="s2">&quot;Parrot bot&quot;</span><span class="p">,</span> <span class="n">database_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos"> 7</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos"> 8</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos"> 9</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">10</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">11</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">12</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>プログラムの解説<a class="headerlink" href="#id4" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id5">
+<h4>スクリプトとして実行されたときの分岐<a class="headerlink" href="#id5" title="この見出しへのパーマリンク">¶</a></h4>
+<p>3行目の <code class="docutils literal notranslate"><span class="pre">if</span></code> 文で評価している <code class="docutils literal notranslate"><span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;</span></code> は
+<strong class="command">python my_chatbot.py</strong> のようにスクリプトを実行したときに <code class="docutils literal notranslate"><span class="pre">True</span></code> となります。</p>
+<p>詳しくは <a class="reference external" href="https://blog.pyq.jp/entry/Python_kaiketsu_180207" rel="noopener noreferrer" target="_blank">https://blog.pyq.jp/entry/Python_kaiketsu_180207</a> をどうぞ</p>
+</div>
+<div class="section" id="chatbot">
+<h4><code class="docutils literal notranslate"><span class="pre">ChatBot</span></code><a class="headerlink" href="#chatbot" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">chatterbot.ChatBot</span></code> クラスをインスタンス化（4行目）</p>
+<ul class="simple">
+<li>第1引数はチャットボットの名前</li>
+<li><code class="docutils literal notranslate"><span class="pre">database_uri</span></code> はチャットボットが参照するデータベースの指定<ul>
+<li><code class="docutils literal notranslate"><span class="pre">None</span></code> は「 <strong>インメモリ</strong> のSQLiteを使う」という指定になります</li>
+<li>Pythonの標準ライブラリの中に <a class="reference external" href="https://docs.python.org/ja/3/library/sqlite3.html" rel="noopener noreferrer" target="_blank">sqlite3モジュール</a> があるので、他のインストールは不要でSQLiteを利用できます</li>
+<li>発展：SQLite以外のデータベース（MySQLなど）に接続するにはライブラリをインストールします</li>
+</ul>
+</li>
+</ul>
+<p>ドキュメント：<a class="reference external" href="https://chatterbot.readthedocs.io/en/stable/chatterbot.html" rel="noopener noreferrer" target="_blank">https://chatterbot.readthedocs.io/en/stable/chatterbot.html</a></p>
+</div>
+<div class="section" id="bot-while">
+<h4>Botとやり取りするための <code class="docutils literal notranslate"><span class="pre">while</span></code> ループ<a class="headerlink" href="#bot-while" title="この見出しへのパーマリンク">¶</a></h4>
+<p>6〜12行目の無限ループについて説明します。
+無限ループは続くスクリプトでも共通です。</p>
+<ul class="simple">
+<li>8行目： <a class="reference external" href="https://docs.python.org/ja/3/library/functions.html#input" rel="noopener noreferrer" target="_blank">input関数</a><ul>
+<li>渡された引数 <code class="docutils literal notranslate"><span class="pre">&quot;You:</span> <span class="pre">&quot;</span></code> を画面に出力し、改行が入力されるまで待ちます</li>
+<li>改行が入力されたら、改行までの文字列を <code class="docutils literal notranslate"><span class="pre">input</span></code> 関数の返り値として返します</li>
+<li>チャットボットに対する <strong>人間の入力を処理</strong> しています</li>
+</ul>
+</li>
+<li>9行目： <code class="docutils literal notranslate"><span class="pre">chatbot</span></code> の <code class="docutils literal notranslate"><span class="pre">get_response</span></code> メソッド<ul>
+<li>入力に対してチャットボットの応答を返します</li>
+<li><code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> ライブラリの中で定義されている <code class="docutils literal notranslate"><span class="pre">Statement</span></code> クラスのインスタンスです</li>
+</ul>
+</li>
+<li>10行目：チャットボットの応答を f-string （変数の指す値を埋め込める文字列）を使って出力します</li>
+</ul>
+<p>以上の3行により人間とチャットボットとでやり取りできます。</p>
+</div>
+<div class="section" id="try-except">
+<h4>やり取りを終了するための <code class="docutils literal notranslate"><span class="pre">try</span></code> - <code class="docutils literal notranslate"><span class="pre">except</span></code><a class="headerlink" href="#try-except" title="この見出しへのパーマリンク">¶</a></h4>
+<p>11行目で指定している例外について</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/ja/3/library/exceptions.html#KeyboardInterrupt" rel="noopener noreferrer" target="_blank">KeyboardInterrupt</a> ：<kbd class="kbd docutils literal notranslate">Ctrl</kbd> + <kbd class="kbd docutils literal notranslate">C</kbd> を押したときに送出されます</li>
+<li><a class="reference external" href="https://docs.python.org/ja/3/library/exceptions.html#EOFError" rel="noopener noreferrer" target="_blank">EOFError</a> ： <code class="docutils literal notranslate"><span class="pre">input</span></code> 関数が何もデータを読まずに end-of-file (EOF) に達したときに送出されます</li>
+<li><a class="reference external" href="https://docs.python.org/ja/3/library/exceptions.html#SystemExit" rel="noopener noreferrer" target="_blank">SystemExit</a> ：<kbd class="kbd docutils literal notranslate">Ctrl</kbd> + <kbd class="kbd docutils literal notranslate">D</kbd> を押したときに送出されます</li>
+</ul>
+<p>これらの例外のいずれかが送出されると、12行目の <code class="docutils literal notranslate"><span class="pre">break</span></code> により、無限ループから抜けます。</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>実行例<a class="headerlink" href="#id6" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python my_chatbot.py
+You: Hello
+Bot: Hello
+You: Hi
+Bot: Hello
+You: How are you?
+Bot: Hello  # Hiが返ることもあります
+You: You seem to be fine, right?
+Bot: Hello
+# Ctrl+C または Ctrl+D で終了します
+</pre></div>
+</div>
+<ul class="simple">
+<li>人間の入力に対して自動応答しています！（これも立派なチャットボットです）</li>
+<li>人間の入力は <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> によりデータベースに保存されます（長くやり取りすれば Hello 以外が返ってくると思います）</li>
+<li>応答は要領を得ないですね → <strong>訓練</strong> していきます</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id7">
+<h2>訓練したチャットボット（英語）<a class="headerlink" href="#id7" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id8">
+<h3>プログラム<a class="headerlink" href="#id8" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id29" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="hll"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">chatterbot.trainers</span> <span class="kn">import</span> <span class="n">ListTrainer</span>
+</span><span class="linenos"> 3</span>
+<span class="hll"><span class="linenos"> 4</span><span class="n">conversation</span> <span class="o">=</span> <span class="p">[</span>
+</span><span class="hll"><span class="linenos"> 5</span>    <span class="s2">&quot;Hello.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 6</span>    <span class="s2">&quot;Hi there!&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 7</span>    <span class="s2">&quot;How are you doing?&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 8</span>    <span class="s2">&quot;I&#39;m doing great.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos"> 9</span>    <span class="s2">&quot;That is good to hear.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">10</span>    <span class="s2">&quot;Thank you.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">11</span>    <span class="s2">&quot;You&#39;re welcome.&quot;</span><span class="p">,</span>
+</span><span class="hll"><span class="linenos">12</span><span class="p">]</span>
+</span><span class="linenos">13</span>
+<span class="linenos">14</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">15</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span><span class="s2">&quot;Training with list bot&quot;</span><span class="p">,</span> <span class="n">database_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="linenos">16</span>
+<span class="hll"><span class="linenos">17</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">ListTrainer</span><span class="p">(</span><span class="n">chatbot</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">18</span>    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">conversation</span><span class="p">)</span>
+</span><span class="linenos">19</span>
+<span class="linenos">20</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">21</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">22</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos">23</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">24</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">25</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">26</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id9">
+<h3>プログラムの解説<a class="headerlink" href="#id9" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id10">
+<h4>チャットボットの「訓練」<a class="headerlink" href="#id10" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">conversation</span></code> が指すリストは、2人のやり取りを表します。
+奇数番目と偶数番目で2人いて、チャットボットはどちらも担当できるように「訓練」されます。</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">&quot;Hello.&quot;</span></code> と言われたら <code class="docutils literal notranslate"><span class="pre">&quot;Hi</span> <span class="pre">there!&quot;</span></code> と返す</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;Hi</span> <span class="pre">there!&quot;</span></code> と言われたら <code class="docutils literal notranslate"><span class="pre">&quot;How</span> <span class="pre">are</span> <span class="pre">you</span> <span class="pre">doing?&quot;</span></code> と返す</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> ライブラリで「訓練」を担当するのが <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> です。
+ここでは <code class="docutils literal notranslate"><span class="pre">ListTrainer</span></code> を使って、 <code class="docutils literal notranslate"><span class="pre">conversation</span></code> のようなリストから訓練します（17, 18行目）。</p>
+<p><code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> における「訓練」（<code class="docutils literal notranslate"><span class="pre">train</span></code>）は、
+<code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> などでの機械学習モデルの訓練（<code class="docutils literal notranslate"><span class="pre">fit</span></code>）とは異なります。
+テキストを検索しやすくなるように前処理して、 <strong>データベースに保存しているだけ</strong> です。</p>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>実行例<a class="headerlink" href="#id11" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python my_chatbot.py
+List Trainer: [####################] 100%
+You: Hello
+Bot: Hi there!  # リストの次の文が返ります
+You: How are you doing?
+Bot: I&#39;m doing great.
+You: I&#39;m doing great.
+Bot: That is good to hear.
+You: Good morning  # リストにない文
+Bot: How are you doing?
+</pre></div>
+</div>
+<ul class="simple">
+<li>リストにある文を入力すると、その次の文が返っています</li>
+<li>リストにない文を入力したときも、それなりの応答が返っています<ul>
+<li>「似ている」訓練した文への応答を返すことをしています</li>
+<li>訓練に使う文をもっと増やせばもっとよくなります（後述）</li>
+</ul>
+</li>
+<li><strong>データベースを検索</strong> して実現しています<ul>
+<li>繰り返しますが、チャットボットへの入力は訓練されます（データベースに保存され、今後の応答に使われます）</li>
+</ul>
+</li>
+</ul>
+<p>次は英語から日本語に切り替えましょう。</p>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>訓練したチャットボット（日本語）<a class="headerlink" href="#id12" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id13">
+<h3>ライブラリのインストール<a class="headerlink" href="#id13" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python -m spacy download ja_core_news_sm
+</pre></div>
+</div>
+<p><a class="reference external" href="https://scrapbox.io/nikkie-memos/ja_core_news_sm" rel="noopener noreferrer" target="_blank">https://scrapbox.io/nikkie-memos/ja_core_news_sm</a></p>
+</div>
+<div class="section" id="id14">
+<h3>プログラム<a class="headerlink" href="#id14" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id30" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="hll"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">chatterbot.languages</span> <span class="kn">import</span> <span class="n">JPN</span>
+</span><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">chatterbot.trainers</span> <span class="kn">import</span> <span class="n">ListTrainer</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="n">conversation</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 6</span>    <span class="s2">&quot;こんにちは&quot;</span><span class="p">,</span>
+<span class="linenos"> 7</span>    <span class="s2">&quot;どうも！&quot;</span><span class="p">,</span>
+<span class="linenos"> 8</span>    <span class="s2">&quot;調子はどうですか？&quot;</span><span class="p">,</span>
+<span class="linenos"> 9</span>    <span class="s2">&quot;順調です&quot;</span><span class="p">,</span>
+<span class="linenos">10</span>    <span class="s2">&quot;それはよかったですね。&quot;</span><span class="p">,</span>
+<span class="linenos">11</span>    <span class="s2">&quot;ありがとうございます&quot;</span><span class="p">,</span>
+<span class="linenos">12</span>    <span class="s2">&quot;どういたしまして&quot;</span><span class="p">,</span>
+<span class="linenos">13</span><span class="p">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="hll"><span class="linenos">16</span><span class="k">class</span> <span class="nc">CustomJPN</span><span class="p">(</span><span class="n">JPN</span><span class="p">):</span>
+</span><span class="hll"><span class="linenos">17</span>    <span class="n">ISO_639_1</span> <span class="o">=</span> <span class="s2">&quot;ja_core_news_sm&quot;</span>
+</span><span class="linenos">18</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">21</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span>
+<span class="hll"><span class="linenos">22</span>        <span class="s2">&quot;Training with list bot&quot;</span><span class="p">,</span> <span class="n">database_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagger_language</span><span class="o">=</span><span class="n">CustomJPN</span>
+</span><span class="linenos">23</span>    <span class="p">)</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">ListTrainer</span><span class="p">(</span><span class="n">chatbot</span><span class="p">)</span>
+<span class="linenos">26</span>    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">conversation</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">29</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">30</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos">31</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">32</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">33</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">34</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">conversation</span></code> が指すリストを日本語にしました。</p>
+</div>
+<div class="section" id="id15">
+<h3>プログラムの解説<a class="headerlink" href="#id15" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="customjpn">
+<h4><code class="docutils literal notranslate"><span class="pre">CustomJPN</span></code><a class="headerlink" href="#customjpn" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">ChatBot</span></code> インスタンスを作るとき（22行目）に <code class="docutils literal notranslate"><span class="pre">tagger_language</span></code> 引数に指定するクラスを用意します。
+この引数に応じて、例えば <code class="docutils literal notranslate"><span class="pre">spaCy</span></code> のモデルが使われます。</p>
+<p><code class="docutils literal notranslate"><span class="pre">chatterbot.languages.JPN</span></code> クラスを継承して、カスタマイズしています（16行目）。
+<code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> が裏で <code class="docutils literal notranslate"><span class="pre">spacy.load</span></code> を呼び出す際に、 <code class="docutils literal notranslate"><span class="pre">&quot;ja_core_news_sm&quot;</span></code> が指定されるようにします。</p>
+<div class="section" id="chatterbot-languages-jpn">
+<h5>カスタマイズする前（<code class="docutils literal notranslate"><span class="pre">chatterbot.languages.JPN</span></code>）<a class="headerlink" href="#chatterbot-languages-jpn" title="この見出しへのパーマリンク">¶</a></h5>
+<p><a class="reference external" href="https://github.com/gunthercox/ChatterBot/blob/181c69f2a44c2da88f9352d9c693773b09beb1f5/chatterbot/languages.py#L991" rel="noopener noreferrer" target="_blank">https://github.com/gunthercox/ChatterBot/blob/181c69f2a44c2da88f9352d9c693773b09beb1f5/chatterbot/languages.py#L991</a> 参照</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ISO_639_1</span></code>： <code class="docutils literal notranslate"><span class="pre">'ja'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ISO_639</span></code>： <code class="docutils literal notranslate"><span class="pre">'jpn'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ENGLISH_NAME</span></code>： <code class="docutils literal notranslate"><span class="pre">'Japanese'</span></code></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h5>カスタマイズ後<a class="headerlink" href="#id16" title="この見出しへのパーマリンク">¶</a></h5>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">ISO_639_1</span></code>： <code class="docutils literal notranslate"><span class="pre">&quot;ja_core_news_sm&quot;</span></code> に変更</li>
+<li><code class="docutils literal notranslate"><span class="pre">ISO_639</span></code> （変更なし）</li>
+<li><code class="docutils literal notranslate"><span class="pre">ENGLISH_NAME</span></code> （変更なし）</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">ISO_639_1</span></code> だけを変えています。
+対話モードで <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">my_chatbot</span> <span class="pre">import</span> <span class="pre">CustomJPN</span></code> をして各属性の指す値を確認できます。</p>
+</div>
+</div>
+</div>
+<div class="section" id="id17">
+<h3>実行例<a class="headerlink" href="#id17" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python my_chatbot.py
+List Trainer: [####################] 100%
+You: こんにちは
+Bot: どうも！
+You: 元気ですか？
+Bot: 順調です  # この実行例は非常にうまくいった例です
+You: それはよかった
+Bot: ありがとうございます
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id18">
+<h2>ファイルを使って訓練したチャットボット（日本語）<a class="headerlink" href="#id18" title="この見出しへのパーマリンク">¶</a></h2>
+<p>訓練に使う文をもっと増やせば、チャットボットの応答はもっとよくなりますが、リストだとプログラムが長くなってしまいます。
+そこで訓練に使う文を別のファイル（YAML形式）に切り出すことを <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> はサポートしています。</p>
+<div class="section" id="id19">
+<h3>ライブラリのインストール<a class="headerlink" href="#id19" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install <span class="s1">&#39;PyYAML&lt;4&#39;</span>
+</pre></div>
+</div>
+<p>YAML形式のファイルを解析するためのライブラリです。</p>
+</div>
+<div class="section" id="id20">
+<h3>会話のデータをファイルに用意<a class="headerlink" href="#id20" title="この見出しへのパーマリンク">¶</a></h3>
+<p>入力と応答の組は <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> がサポートするYAMLファイルでは、以下のように表します。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">入力</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">応答</span><span class="w"></span>
+</pre></div>
+</div>
+<p>例： <code class="docutils literal notranslate"><span class="pre">&quot;こんにちは&quot;</span></code> と言われたら <code class="docutils literal notranslate"><span class="pre">&quot;どうも！&quot;</span></code> と返す</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">こんにちは</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">どうも！</span><span class="w"></span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">conversation</span></code> が指すリストをファイルで表すと次のようになります。</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">greetings_ja.yml</span><a class="headerlink" href="#id31" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">categories</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">greetings</span><span class="w"></span>
+<span class="nt">conversations</span><span class="p">:</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">こんにちは</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">どうも！</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">どうも！</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">調子はどうですか？</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">調子はどうですか？</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">順調です</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">順調です</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">それはよかったですね。</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">それはよかったですね。</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ありがとうございます</span><span class="w"></span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ありがとうございます</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">どういたしまして</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<p>ファイルの配置</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── env
+├── greetings_ja.yml
+└── my_chatbot.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="id21">
+<h3>プログラム<a class="headerlink" href="#id21" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id32">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id32" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</span><span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">chatterbot.languages</span> <span class="kn">import</span> <span class="n">JPN</span>
+<span class="hll"><span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">chatterbot.trainers</span> <span class="kn">import</span> <span class="n">ChatterBotCorpusTrainer</span>
+</span><span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span> <span class="nc">CustomJPN</span><span class="p">(</span><span class="n">JPN</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="n">ISO_639_1</span> <span class="o">=</span> <span class="s2">&quot;ja_core_news_sm&quot;</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="hll"><span class="linenos">13</span>    <span class="n">cli_dir_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+</span><span class="hll"><span class="linenos">14</span>    <span class="n">data_yml_path</span> <span class="o">=</span> <span class="n">cli_dir_path</span> <span class="o">/</span> <span class="s2">&quot;greetings_ja.yml&quot;</span>
+</span><span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span>
+<span class="linenos">17</span>        <span class="s2">&quot;Training from yaml bot&quot;</span><span class="p">,</span> <span class="n">database_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tagger_language</span><span class="o">=</span><span class="n">CustomJPN</span>
+<span class="linenos">18</span>    <span class="p">)</span>
+<span class="linenos">19</span>
+<span class="hll"><span class="linenos">20</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">ChatterBotCorpusTrainer</span><span class="p">(</span><span class="n">chatbot</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">21</span>    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">data_yml_path</span><span class="p">))</span>
+</span><span class="linenos">22</span>
+<span class="linenos">23</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">24</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">25</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos">26</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">27</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">28</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">29</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id22">
+<h3>プログラムの解説<a class="headerlink" href="#id22" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="chatterbotcorpustrainer">
+<h4><code class="docutils literal notranslate"><span class="pre">ChatterBotCorpusTrainer</span></code><a class="headerlink" href="#chatterbotcorpustrainer" title="この見出しへのパーマリンク">¶</a></h4>
+<p>ファイルを使った訓練に使う <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> です。</p>
+<p><code class="docutils literal notranslate"><span class="pre">train</span></code> メソッドにファイルのパスを表す文字列を指定しています（21行目）。</p>
+</div>
+<div class="section" id="pathlib">
+<h4><code class="docutils literal notranslate"><span class="pre">pathlib</span></code><a class="headerlink" href="#pathlib" title="この見出しへのパーマリンク">¶</a></h4>
+<p>※ <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> 関係のトピックというより、Pythonについてのトピックです</p>
+<p>ファイルパスなどのパスを扱うモジュールです（標準ライブラリにあります）。</p>
+<p><a class="reference external" href="https://docs.python.org/ja/3/library/pathlib.html" rel="noopener noreferrer" target="_blank">https://docs.python.org/ja/3/library/pathlib.html</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">str(data_yml_path)</span></code> では、パスオブジェクトをパスを表す <strong>文字列</strong> に変えています。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_yml_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;greetings_ja.yml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">data_yml_path</span><span class="p">)</span>
+<span class="go">&lt;class &#39;pathlib.PosixPath&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_yml_path</span>
+<span class="go">PosixPath(&#39;greetings_ja.yml&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">data_yml_path</span><span class="p">)</span>
+<span class="go">&#39;greetings_ja.yml&#39;</span>
+</pre></div>
+</div>
+<p>訓練に使った文は前項と共通なので、実行例は省略します。</p>
+</div>
+</div>
+</div>
+<div class="section" id="corpus-train-ja-bot">
+<span id="id23"></span><h2>コーパスを使って訓練したチャットボット（日本語）<a class="headerlink" href="#corpus-train-ja-bot" title="この見出しへのパーマリンク">¶</a></h2>
+<p>コーパスとは、言語の使用方法を蓄積した文書集合。</p>
+<p><a class="reference external" href="https://scrapbox.io/nikkie-memos/%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9" rel="noopener noreferrer" target="_blank">https://scrapbox.io/nikkie-memos/%E3%82%B3%E3%83%BC%E3%83%91%E3%82%B9</a></p>
+<div class="section" id="id24">
+<h3>ライブラリのインストール<a class="headerlink" href="#id24" title="この見出しへのパーマリンク">¶</a></h3>
+<p>XXX: インストールがうまくいかない事象が発生中（👉Workaround追加）</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install pypandoc  <span class="c1"># Workaround</span>
+$ pip install git+https://github.com/gunthercox/chatterbot-corpus
+</pre></div>
+</div>
+<p>2021/11時点では <code class="docutils literal notranslate"><span class="pre">1.2.0</span></code> が入ります。</p>
+</div>
+<div class="section" id="id25">
+<h3>プログラム<a class="headerlink" href="#id25" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id33" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">chatterbot.languages</span> <span class="kn">import</span> <span class="n">JPN</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">chatterbot.trainers</span> <span class="kn">import</span> <span class="n">ChatterBotCorpusTrainer</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">CustomJPN</span><span class="p">(</span><span class="n">JPN</span><span class="p">):</span>
+<span class="linenos"> 7</span>    <span class="n">ISO_639_1</span> <span class="o">=</span> <span class="s2">&quot;ja_core_news_sm&quot;</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="hll"><span class="linenos">11</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span><span class="s2">&quot;Training from corpus bot&quot;</span><span class="p">,</span> <span class="n">tagger_language</span><span class="o">=</span><span class="n">CustomJPN</span><span class="p">)</span>
+</span><span class="linenos">12</span>
+<span class="linenos">13</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">ChatterBotCorpusTrainer</span><span class="p">(</span><span class="n">chatbot</span><span class="p">)</span>
+<span class="hll"><span class="linenos">14</span>    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="s2">&quot;chatterbot.corpus.japanese&quot;</span><span class="p">)</span>
+</span><span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">17</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">18</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos">19</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">20</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">22</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id26">
+<h3>プログラムの解説<a class="headerlink" href="#id26" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="database-uri-11">
+<h4><code class="docutils literal notranslate"><span class="pre">database_uri</span></code> 引数を指定しない（11行目）<a class="headerlink" href="#database-uri-11" title="この見出しへのパーマリンク">¶</a></h4>
+<p>訓練や入力された文は （メモリ上ではなく） <code class="docutils literal notranslate"><span class="pre">db.sqlite3</span></code> というファイルに保存されます。
+ファイルに保存されるのでスクリプトを終了しても残ります。</p>
+</div>
+<div class="section" id="train-14">
+<h4>trainメソッドの引数（14行目）<a class="headerlink" href="#train-14" title="この見出しへのパーマリンク">¶</a></h4>
+<p><a class="reference external" href="https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/japanese" rel="noopener noreferrer" target="_blank">https://github.com/gunthercox/chatterbot-corpus/tree/master/chatterbot_corpus/data/japanese</a> にあるYAMLファイル全部使って訓練するように指定しています。</p>
+<p>発展： <code class="docutils literal notranslate"><span class="pre">chatterbot.corpus</span></code> を読み込んだときに <code class="docutils literal notranslate"><span class="pre">chatterbot_corpus</span></code> が読み込めるか試みます。
+読み込めた場合は <code class="docutils literal notranslate"><span class="pre">chatterbot_corpus</span></code> の <code class="docutils literal notranslate"><span class="pre">data</span></code> 以下のディレクトリがコーパスとして指定できます。</p>
+<p>スクリプトを実行してチャットボットとやり取りしてみてください！</p>
+</div>
+</div>
+<div class="section" id="id27">
+<h3>ライブラリのインストールがうまくいかない場合<a class="headerlink" href="#id27" title="この見出しへのパーマリンク">¶</a></h3>
+<p>GitHubの代わりにPyPIからインストール</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install chatterbot-corpus
+</pre></div>
+</div>
+<p>このとき <strong>日本語のコーパスはインストールされません</strong>。
+なので、英語のコーパスを代わりに指定して動くことを確認してください（14行目）。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="s2">&quot;chatterbot.corpus.english&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">chatbot-lecture-2021</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../10-overview/index.html">チャットボットとは</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../20-environment/index.html">環境構築</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ChatterBot はじめの一歩</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">オウム返しするチャットボット（英語）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">訓練したチャットボット（英語）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">訓練したチャットボット（日本語）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">ファイルを使って訓練したチャットボット（日本語）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#corpus-train-ja-bot">コーパスを使って訓練したチャットボット（日本語）</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../40-django-app-basic/index.html">Django基礎（チャットボットをWebアプリにするための準備）</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../50-send-message-django-app/index.html">チャットボットとやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../60-trained-bot-django-app/index.html">ChatterBotのチャットボットとWebアプリでやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">参考文献</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../20-environment/index.html" title="前の章へ">環境構築</a></li>
+      <li>Next: <a href="../40-django-app-basic/index.html" title="次の章へ">Django基礎（チャットボットをWebアプリにするための準備）</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, nikkie.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/30-chatterbot-first-step/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

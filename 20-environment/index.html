@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>環境構築 &#8212; chatbot-lecture-2021  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="ChatterBot はじめの一歩" href="../30-chatterbot-first-step/index.html" />
+    <link rel="prev" title="チャットボットとは" href="../10-overview/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="chatbot-environment">
+<span id="id1"></span><h1>環境構築<a class="headerlink" href="#chatbot-environment" title="この見出しへのパーマリンク">¶</a></h1>
+<p>現在のドキュメントのバージョンは、macOSを前提としています。</p>
+<div class="section" id="python">
+<h2>Pythonのバージョン<a class="headerlink" href="#python" title="この見出しへのパーマリンク">¶</a></h2>
+<p>確認しましょう</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3 -V
+</pre></div>
+</div>
+<p>（構築した方法によっては <strong class="command">python</strong> かもしれません）</p>
+<p><strong>Python 3.7.x</strong> で進めます。</p>
+<p>インストールしていない場合は <a class="reference external" href="https://scrapbox.io/nikkie-memos/Python_3.7_%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB_(2021%2F11%E6%99%82%E7%82%B9)" rel="noopener noreferrer" target="_blank">Python 3.7 インストール方法</a></p>
+</div>
+<div class="section" id="id2">
+<h2>作業ディレクトリを作る<a class="headerlink" href="#id2" title="この見出しへのパーマリンク">¶</a></h2>
+<p>以下のコマンドのディレクトリのパスは一例です。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir -p ~/programming/chatbot
+$ <span class="nb">cd</span> ~/programming/chatbot
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>仮想環境<a class="headerlink" href="#id3" title="この見出しへのパーマリンク">¶</a></h2>
+<p>作業ディレクトリにいる状態を前提にしています（<strong class="command">pwd</strong> で確認しましょう）。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3.7 -m venv env
+$ <span class="nb">source</span> env/bin/activate
+<span class="o">(</span>env<span class="o">)</span> $ python -m pip install -U pip
+</pre></div>
+</div>
+<p>プロンプトの <code class="docutils literal notranslate"><span class="pre">(env)</span></code> は仮想環境が有効になった状態を示します。</p>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p><strong class="command">source</strong> コマンドは <strong class="command">.</strong> と簡略化できます（<strong class="command">. env/bin/activate</strong>）。</p>
+<p class="last"><code class="file docutils literal notranslate"><span class="pre">env/bin/activate</span></code> はシェルスクリプトで、<strong class="command">source</strong> コマンドで実行しています。</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p class="last">仮想環境を無効にする場合は <strong class="command">deactivate</strong> コマンドを入力します。</p>
+</div>
+</div>
+<div class="section" id="chatterbot">
+<h2><code class="docutils literal notranslate"><span class="pre">ChatterBot</span></code> インストール<a class="headerlink" href="#chatterbot" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>env<span class="o">)</span> $ pip install ChatterBot
+</pre></div>
+</div>
+<p>2021/11時点では <code class="docutils literal notranslate"><span class="pre">1.0.8</span></code> がインストールされます。</p>
+<p>この時点では対話モードで <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">chatterbot</span></code> してもエラー（<code class="docutils literal notranslate"><span class="pre">ModuleNotFoundError</span></code>）が送出されます。
+次の項目にて、依存するライブラリをインストールすることで解決します。</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">chatbot-lecture-2021</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../10-overview/index.html">チャットボットとは</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">環境構築</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#python">Pythonのバージョン</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">作業ディレクトリを作る</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">仮想環境</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chatterbot"><code class="docutils literal notranslate"><span class="pre">ChatterBot</span></code> インストール</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../30-chatterbot-first-step/index.html">ChatterBot はじめの一歩</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../40-django-app-basic/index.html">Django基礎（チャットボットをWebアプリにするための準備）</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../50-send-message-django-app/index.html">チャットボットとやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../60-trained-bot-django-app/index.html">ChatterBotのチャットボットとWebアプリでやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">参考文献</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../10-overview/index.html" title="前の章へ">チャットボットとは</a></li>
+      <li>Next: <a href="../30-chatterbot-first-step/index.html" title="次の章へ">ChatterBot はじめの一歩</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, nikkie.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/20-environment/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

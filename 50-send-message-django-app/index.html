@@ -1,0 +1,710 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>チャットボットとやり取りできるようにする &#8212; chatbot-lecture-2021  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="ChatterBotのチャットボットとWebアプリでやり取りできるようにする" href="../60-trained-bot-django-app/index.html" />
+    <link rel="prev" title="Django基礎（チャットボットをWebアプリにするための準備）" href="../40-django-app-basic/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>チャットボットとやり取りできるようにする<a class="headerlink" href="#id1" title="この見出しへのパーマリンク">¶</a></h1>
+<div class="section" id="intro03">
+<span id="id2"></span><h2>今回の位置づけ<a class="headerlink" href="#intro03" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id3">
+<h3>前回までの復習<a class="headerlink" href="#id3" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id4">
+<h4>初回<a class="headerlink" href="#id4" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>チャットボット＝自動応答するプログラム（<a class="reference internal" href="../10-overview/index.html#what-is-chatbot"><span class="std std-ref">チャットボットの概要</span></a>）</li>
+<li>ライブラリ <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> を使ったPythonスクリプト</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h4>前回<a class="headerlink" href="#id5" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>チャットボットをWebアプリとして動かすための <strong>準備</strong></li>
+<li>Djangoを使って手元のPCで動くアプリケーションを開発</li>
+<li>チャットボットと会話できるWebアプリ</li>
+</ul>
+<p>Djangoの設定</p>
+<ul class="simple">
+<li>プロジェクトとアプリケーション（<a class="reference internal" href="../40-django-app-basic/index.html#django-project-and-application"><span class="std std-ref">プロジェクト／アプリケーション作成</span></a>）</li>
+<li>URL設定、ビュー、テンプレート（<a class="reference internal" href="../40-django-app-basic/index.html#django-components"><span class="std std-ref">HTMLを表示する</span></a>）</li>
+</ul>
+<div class="section" id="id6">
+<h5>ここまでの実装内容<a class="headerlink" href="#id6" title="この見出しへのパーマリンク">¶</a></h5>
+<ul class="simple">
+<li>URL設定：<a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> （パスが <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> （空文字列））へのリクエストに対しては、ビューの <code class="docutils literal notranslate"><span class="pre">home</span></code> （関数）を呼び出す</li>
+<li>ビュー： <code class="docutils literal notranslate"><span class="pre">home</span></code> 関数は、テンプレート <code class="docutils literal notranslate"><span class="pre">chat/home.html</span></code> を含んだレスポンスを返す</li>
+<li>テンプレート：空のHTMLファイルを置いただけ</li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">chat/home.html</span></code> にHTMLを書くと、ブラウザに表示できます</p>
+</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>今回やること<a class="headerlink" href="#id7" title="この見出しへのパーマリンク">¶</a></h3>
+<p>表示したHTML上で、 <strong>チャットボットとやり取りできる</strong> ようにしていきます。</p>
+<div class="section" id="id8">
+<h4>前回の開発の続きができるように準備<a class="headerlink" href="#id8" title="この見出しへのパーマリンク">¶</a></h4>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/programming/chatbot
+$ <span class="nb">source</span> env/bin/activate
+$ <span class="nb">cd</span> app
+$ python manage.py runserver
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p>今回からの方向け</p>
+<p>前回の状態のファイルをzipにまとめて配布しています。
+ダウンロードし、解凍してできた <code class="file docutils literal notranslate"><span class="pre">app</span></code> ディレクトリを <code class="file docutils literal notranslate"><span class="pre">~/programming/chatbot</span></code> 以下に置いてください。</p>
+<div class="last highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/programming/chatbot  <span class="c1"># チャットボットの講義用ディレクトリ</span>
+$ python3.7 -m venv env  <span class="c1"># 仮想環境をまだ作っていない場合は作る</span>
+$ <span class="nb">source</span> env/bin/activate
+$ pip install <span class="s1">&#39;Django&lt;4&#39;</span>  <span class="c1"># 仮想環境にDjangoをインストール</span>
+$ <span class="nb">cd</span> app  <span class="c1"># ダウンロードして解凍したディレクトリを ~/programming/chatbot/app として配置済み</span>
+$ python manage.py runserver
+</pre></div>
+</div>
+</div>
+<p><a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> をブラウザで開くと、真っ白い画面が表示される状態から始めます（前回はエラーを解決しながら設定しました）</p>
+<p>開発tips：VSCodeの別のタブで <strong class="command">runserver</strong> しておく</p>
+</div>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>チャットボットとやり取りできる画面を作る<a class="headerlink" href="#id9" title="この見出しへのパーマリンク">¶</a></h2>
+<p><a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> で表示される画面にメッセージ入力欄を作ります。</p>
+<p>メッセージ入力欄はHTMLの <code class="docutils literal notranslate"><span class="pre">form</span></code> タグで実装します。
+<a class="reference external" href="https://developer.mozilla.org/ja/docs/Web/HTML/Element/form" rel="noopener noreferrer" target="_blank">https://developer.mozilla.org/ja/docs/Web/HTML/Element/form</a></p>
+<p>HTMLを書いてもいいのですが、Djangoがサポートしているフォーム（<strong>Djangoフォーム</strong>）を使います。
+Djangoの流儀に沿ってPythonを書けば、HTMLのフォームができあがります。
+（個人的な経験ですが、フォームのためにテンプレートに長くHTMLを書いたあとで、DjangoフォームにしておけばPythonで済ませられたことに気づき、Djangoフォームを選んでいればもっと開発しやすかったなと感じました）</p>
+<div class="section" id="id10">
+<h3>フォーム<a class="headerlink" href="#id10" title="この見出しへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">chat</span></code> アプリケーションに <code class="file docutils literal notranslate"><span class="pre">forms.py</span></code> を作ります。</p>
+<p><strong class="command">touch chat/forms.py</strong></p>
+<div class="literal-block-wrapper docutils container" id="id24">
+<div class="code-block-caption"><span class="caption-text">app/chat/forms.py</span><a class="headerlink" href="#id24" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="k">class</span> <span class="nc">ChatMessageForm</span><span class="p">(</span><span class="n">forms</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="linenos">5</span>    <span class="n">message</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Djangoが提供する <code class="docutils literal notranslate"><span class="pre">Form</span></code> クラスを継承して、 <code class="docutils literal notranslate"><span class="pre">ChatMessageForm</span></code> クラスを定義します（4行目）。
+フォームの入力欄はテキストが入力できる <code class="docutils literal notranslate"><span class="pre">CharField</span></code> のみとします（入力必須で、100文字まで）（5行目）。</p>
+<p><a class="reference external" href="https://docs.djangoproject.com/ja/3.2/ref/forms/fields/#charfield" rel="noopener noreferrer" target="_blank">https://docs.djangoproject.com/ja/3.2/ref/forms/fields/#charfield</a></p>
+</div>
+<div class="section" id="id11">
+<h3>テンプレートにフォームを表示<a class="headerlink" href="#id11" title="この見出しへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li>ビューでフォームのインスタンスを作り、テンプレートに渡します</li>
+<li>テンプレートはフォームを表示します</li>
+</ul>
+<div class="section" id="id12">
+<h4>ビュー<a class="headerlink" href="#id12" title="この見出しへのパーマリンク">¶</a></h4>
+<div class="literal-block-wrapper docutils container" id="id25">
+<div class="code-block-caption"><span class="caption-text">app/chat/views.py</span><a class="headerlink" href="#id25" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="linenos">1</span><span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">ChatMessageForm</span>
+</span><span class="linenos">2</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos">5</span>    <span class="n">form</span> <span class="o">=</span> <span class="n">ChatMessageForm</span><span class="p">()</span>
+<span class="hll"><span class="linenos">6</span>    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;form&quot;</span><span class="p">:</span> <span class="n">form</span><span class="p">}</span>
+</span><span class="hll"><span class="linenos">7</span>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;chat/home.html&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/forms.py</span></code> に作った <code class="docutils literal notranslate"><span class="pre">ChatMessageForm</span></code> をインスタンス化します（5行目）。
+<code class="docutils literal notranslate"><span class="pre">render</span></code> の第3引数に辞書（<code class="docutils literal notranslate"><span class="pre">context</span></code> という名前にしました）を渡します（7行目）。
+<code class="docutils literal notranslate"><span class="pre">context</span></code> はビューの <code class="docutils literal notranslate"><span class="pre">form</span></code> （<code class="docutils literal notranslate"><span class="pre">ChatMessageForm</span></code> インスタンス）を <code class="docutils literal notranslate"><span class="pre">form</span></code> という名前で渡します（6行目）。
+テンプレートとビューとで異なる名前を設定することもできますが、混乱を避けるため、私は揃えることが多いです。</p>
+</div>
+<div class="section" id="id13">
+<h4>テンプレート<a class="headerlink" href="#id13" title="この見出しへのパーマリンク">¶</a></h4>
+<p>空っぽの <code class="docutils literal notranslate"><span class="pre">chat/home.html</span></code> を以下のようにします。</p>
+<div class="literal-block-wrapper docutils container" id="id26">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id26" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="linenos"> 2</span><span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;ja&quot;</span><span class="p">&gt;</span>
+<span class="linenos"> 3</span>  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="linenos"> 4</span>    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span> <span class="p">/&gt;</span>
+<span class="linenos"> 5</span>    <span class="p">&lt;</span><span class="nt">meta</span>
+<span class="linenos"> 6</span>      <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span>
+<span class="linenos"> 7</span>      <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1, shrink-to-fit=no&quot;</span>
+<span class="linenos"> 8</span>    <span class="p">/&gt;</span>
+<span class="linenos"> 9</span>    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Chatbot app<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+<span class="linenos">10</span>  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="linenos">11</span>  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="linenos">12</span>    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Talk with chatbot<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="linenos">13</span>
+<span class="hll"><span class="linenos">14</span>    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+</span><span class="hll"><span class="linenos">15</span>      {% csrf_token %} {{ form.as_p }}
+</span><span class="hll"><span class="linenos">16</span>      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Send<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+</span><span class="hll"><span class="linenos">17</span>    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</span><span class="linenos">18</span>  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="linenos">19</span><span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;body&gt;</span></code> の部分に注目してください（<code class="docutils literal notranslate"><span class="pre">&lt;head&gt;</span></code> については説明を省略します）。</p>
+<p><code class="docutils literal notranslate"><span class="pre">{{</span> <span class="pre">form</span> <span class="pre">}}</span></code> とすればHTMLにメッセージ入力欄が表示されます（テンプレートに変数を埋め込む書き方です）。
+Djangoフォームではinputができるので、<code class="docutils literal notranslate"><span class="pre">&lt;form&gt;</span></code> タグと <code class="docutils literal notranslate"><span class="pre">&lt;button&gt;</span></code> タグは書く必要があります。</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p>参考情報</p>
+<ul class="last simple">
+<li><a class="reference external" href="https://www.slideshare.net/KyutatsuNishiura/djangoform2021-django-congress" rel="noopener noreferrer" target="_blank">理解して使いこなすDjangoのForm機能</a><ul>
+<li><a class="reference external" href="https://djangocongress.jp/" rel="noopener noreferrer" target="_blank">Django Congress JP 2021</a> の発表資料です（YouTubeにアーカイブもあります）</li>
+<li>Djangoフォームについて詳細に説明しています</li>
+<li>0章、Django shellでフォームを扱うのはわかりやすいと思いました（ここだけ確認、オススメです！）</li>
+</ul>
+</li>
+<li><a class="reference external" href="https://speakerdeck.com/akiyoko/django-security-measures-for-business-djangocon-jp-2019?slide=65" rel="noopener noreferrer" target="_blank">現場で使える Django のセキュリティ対策</a><ul>
+<li><a class="reference external" href="https://djangocongress.jp/2019" rel="noopener noreferrer" target="_blank">Django Congress JP 2019</a> の発表資料です（YouTubeにアーカイブもあります）</li>
+<li><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">csrf_token</span> <span class="pre">%}</span></code> がなぜ必要なのかも解説もあります</li>
+<li>クロスサイトリクエストフォージェリ（＝CSRF）への対策のためなのですが、詳しくはスライド63〜を見てみてください</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id14">
+<h2>オウム返しするチャットボットを作る<a class="headerlink" href="#id14" title="この見出しへのパーマリンク">¶</a></h2>
+<p>フォームを表示できるようになりました！
+しかし、「こんにちは」のように入力して <span class="guilabel">Send</span> をクリックすると、入力した文字が消えます。
+今の設定ではこれは正常な挙動です。</p>
+<div class="section" id="url">
+<h3>チャットボットが応答するURLを用意する<a class="headerlink" href="#url" title="この見出しへのパーマリンク">¶</a></h3>
+<p>チャットボットが応答するようにしましょう。
+単純なチャットボットとして、オウム返しするチャットボットで考えます。</p>
+<ul class="simple">
+<li>追加するURL：<a class="reference external" href="http://127.0.0.1:8000/bot-response/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/bot-response/</a><ul>
+<li>URL設定を追加する</li>
+<li>フォームの <code class="docutils literal notranslate"><span class="pre">action</span></code> 属性に設定（入力をチャットボットに送る）</li>
+</ul>
+</li>
+<li>フォーム入力されたデータの <strong>POST</strong> リクエストに対して、同じ <code class="docutils literal notranslate"><span class="pre">message</span></code> を返す<ul>
+<li>ビューに関数を追加する</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>URL設定<a class="headerlink" href="#id15" title="この見出しへのパーマリンク">¶</a></h3>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/urls.py</span></code> の <code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> が指すリストに <code class="docutils literal notranslate"><span class="pre">path</span></code> の行を1つ追加します。</p>
+<div class="literal-block-wrapper docutils container" id="id27">
+<div class="code-block-caption"><span class="caption-text">app/chat/urls.py</span><a class="headerlink" href="#id27" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">chat</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;chat&quot;</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 8</span>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;home&quot;</span><span class="p">),</span>
+<span class="hll"><span class="linenos"> 9</span>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;bot-response/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">bot_response</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bot_response&quot;</span><span class="p">),</span>
+</span><span class="linenos">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/views.py</span></code> に <code class="docutils literal notranslate"><span class="pre">bot_response</span></code> という関数がまだないのでエラーとなり、サーバが起動しません。</p>
+<div class="admonition hint">
+<p class="first admonition-title">ヒント</p>
+<p><code class="docutils literal notranslate"><span class="pre">urlpatterns</span></code> の指す値は <strong>リスト</strong> なので、末尾のカンマが落ちていると <code class="docutils literal notranslate"><span class="pre">SyntaxError</span></code> が送出されます。</p>
+<div class="last highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;home&quot;</span><span class="p">)</span>  <span class="c1"># 末尾のカンマ忘れに注意！</span>
+    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;bot-response/&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">bot_response</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bot_response&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id16">
+<h3>ビュー<a class="headerlink" href="#id16" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id17">
+<h4>エラーを解消するための実装<a class="headerlink" href="#id17" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">bot_response</span></code> 関数を作ります。</p>
+<p>ビューの関数は引数に <code class="docutils literal notranslate"><span class="pre">request</span></code> を受け取り、Djangoの <code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code> を返します。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>  <span class="c1"># importの行に追加</span>
+
+
+<span class="k">def</span> <span class="nf">bot_response</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">()</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;レスポンスです&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code> の <code class="docutils literal notranslate"><span class="pre">write</span></code> メソッドでレスポンスの内容を書き込めます：
+<a class="reference external" href="https://docs.djangoproject.com/ja/3.2/ref/request-response/#django.http.HttpResponse.write" rel="noopener noreferrer" target="_blank">https://docs.djangoproject.com/ja/3.2/ref/request-response/#django.http.HttpResponse.write</a></p>
+<div class="admonition hint">
+<p class="first admonition-title">ヒント</p>
+<p>ここでフォームの <code class="docutils literal notranslate"><span class="pre">action</span></code> 属性を設定すると、Sendしたあと「レスポンスです」とブラウザに表示されます。</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;http://127.0.0.1:8000/bot-response/&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p class="last">のちほど設定について案内します（もっといい設定方法があります）。</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">home</span></code> 関数で呼び出している <code class="docutils literal notranslate"><span class="pre">render</span></code> も実は <code class="docutils literal notranslate"><span class="pre">HttpResponse</span></code> を返しています。
+<a class="reference external" href="https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#a-shortcut-render" rel="noopener noreferrer" target="_blank">https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#a-shortcut-render</a></p>
+</div>
+</div>
+<div class="section" id="id18">
+<h4>オウム返しするための実装<a class="headerlink" href="#id18" title="この見出しへのパーマリンク">¶</a></h4>
+<p>引数 <code class="docutils literal notranslate"><span class="pre">request</span></code> には <strong>フォームから送信されたデータが含まれる</strong> ので、それを取り出して、レスポンスに含めます。
+この実装により、決め打ちのレスポンスからオウム返しのレスポンスに変わります。</p>
+<div class="literal-block-wrapper docutils container" id="id28">
+<div class="code-block-caption"><span class="caption-text">app/chat/views.py</span><a class="headerlink" href="#id28" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="hll"><span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">HttpResponse</span>
+</span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+
+<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">ChatMessageForm</span>
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id29">
+<div class="code-block-caption"><span class="caption-text">app/chat/views.py</span><a class="headerlink" href="#id29" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">def</span> <span class="nf">bot_response</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="hll"><span class="linenos">2</span>    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos">3</span>        <span class="n">form</span> <span class="o">=</span> <span class="n">ChatMessageForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
+</span><span class="hll"><span class="linenos">4</span>        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
+</span><span class="hll"><span class="linenos">5</span>            <span class="n">response_message</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span>
+</span><span class="linenos">6</span>            <span class="n">http_response</span> <span class="o">=</span> <span class="n">HttpResponse</span><span class="p">()</span>
+<span class="linenos">7</span>            <span class="n">http_response</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response_message</span><span class="p">)</span>
+<span class="linenos">8</span>            <span class="k">return</span> <span class="n">http_response</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">request.method</span></code> でPOSTリクエストかどうか判定します（2行目）。
+フォームから送信するとPOSTリクエストになります（<code class="docutils literal notranslate"><span class="pre">method=&quot;POST&quot;</span></code> と指定しているためです）。</p>
+<p>POSTリクエストでは、<code class="docutils literal notranslate"><span class="pre">request.POST</span></code> にフォームから送信されたデータがあります。
+これを渡して <code class="docutils literal notranslate"><span class="pre">ChatMessageForm</span></code> のインスタンスを作ります（3行目）。</p>
+<p>4行目はフォームから送信されたデータの検証です。</p>
+<p>検証がパスした場合、 <code class="docutils literal notranslate"><span class="pre">data</span></code> 属性（辞書）のキー <code class="docutils literal notranslate"><span class="pre">&quot;message&quot;</span></code> の値を取得します（5行目）。
+これがフォームに入力されたメッセージです。
+Djangoフォームで <code class="docutils literal notranslate"><span class="pre">message</span> <span class="pre">=</span> <span class="pre">...</span></code> と指定したので、キーも <code class="docutils literal notranslate"><span class="pre">&quot;message&quot;</span></code> となります。</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p><code class="docutils literal notranslate"><span class="pre">request</span></code> についてドキュメントより</p>
+<blockquote>
+<div>request.POST は辞書のようなオブジェクトです。</div></blockquote>
+<p class="last"><a class="reference external" href="https://docs.djangoproject.com/ja/3.2/intro/tutorial04/#write-a-minimal-form" rel="noopener noreferrer" target="_blank">https://docs.djangoproject.com/ja/3.2/intro/tutorial04/#write-a-minimal-form</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="id19">
+<h3>テンプレート<a class="headerlink" href="#id19" title="この見出しへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;form&gt;</span></code> タグの <code class="docutils literal notranslate"><span class="pre">action</span></code> 属性を指定します。</p>
+<div class="literal-block-wrapper docutils container" id="id30">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id30" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="hll">    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;chat:bot_response&#39; %}&quot;</span><span class="p">&gt;</span>
+</span>      {% csrf_token %} {{ form.as_p }}
+      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Send<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">url</span> <span class="pre">%}</span></code> はDjangoのテンプレートで使えるタグの1つです。
+第1引数は、URL設定にある <code class="docutils literal notranslate"><span class="pre">name</span></code> を指定します。
+<code class="docutils literal notranslate"><span class="pre">'chat:bot_response'</span></code> は <code class="docutils literal notranslate"><span class="pre">'&lt;app_name&gt;:&lt;name&gt;'</span></code> という形式です。
+chat アプリケーションの <code class="docutils literal notranslate"><span class="pre">name=&quot;bot_response&quot;</span></code> というURL設定が見つかります。
+結果として、 <code class="docutils literal notranslate"><span class="pre">action</span></code> 属性に <a class="reference external" href="http://127.0.0.1:8000/bot-response/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/bot-response/</a> が設定されます。</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p>なぜ <code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">url</span> <span class="pre">%}</span></code> を使うのか？</p>
+<p>ずばり、<strong>変更しやすくする</strong> ためです。
+URLを直接書く（ハードコードする）と、パスの文字列の変更（例 <code class="docutils literal notranslate"><span class="pre">&quot;bot-response/&quot;</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;response/&quot;</span></code>）に追従させるのが大変です。
+<code class="docutils literal notranslate"><span class="pre">{%</span> <span class="pre">url</span> <span class="pre">%}</span></code> タグで <code class="docutils literal notranslate"><span class="pre">name</span></code> から逆引きすることで、パスの文字列を変えやすくしています。</p>
+<blockquote>
+<div>このハードコードされた、密結合のアプローチの問題は、プロジェクトにテンプレートが多数ある場合、URLの変更が困難になってしまうことです。</div></blockquote>
+<p class="last"><a class="reference external" href="https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#removing-hardcoded-urls-in-templates" rel="noopener noreferrer" target="_blank">https://docs.djangoproject.com/ja/3.2/intro/tutorial03/#removing-hardcoded-urls-in-templates</a></p>
+</div>
+<p>以上で、フォームからメッセージを送ると、画面遷移し、オウム返しされたメッセージが表示されるようになりました！</p>
+</div>
+</div>
+<div class="section" id="id20">
+<h2>画面遷移なしでチャットボットとやり取りできる<a class="headerlink" href="#id20" title="この見出しへのパーマリンク">¶</a></h2>
+<p>フォームを送信すると、チャットボットはオウム返ししますが、画面繊維を伴います。
+<strong>フォームがある画面にチャットボットのやり取りを出し</strong>、チャットが蓄積するようにします。</p>
+<p>画面遷移なしにするには <strong>Ajax</strong> （Asynchronous JavaScript And XML）を使います。
+テンプレートの <code class="file docutils literal notranslate"><span class="pre">chat/home.html</span></code> にJavaScriptを書いていきます。</p>
+<p>今回は <code class="docutils literal notranslate"><span class="pre">jQuery</span></code> というライブラリを使用してAjaxによる通信を組み込みます。
+（現在のJavaScript周りの状況を見ると <code class="docutils literal notranslate"><span class="pre">jQuery</span></code> は下火ですが、学習コストは小さいので今回採用しています。VueやReactでやってもらってもかまいません）</p>
+<p>使うメソッドについては次のメモにまとめました：
+<a class="reference external" href="https://scrapbox.io/nikkie-memos/jQuery%E3%83%A1%E3%83%A2%EF%BC%88%E3%83%81%E3%83%A3%E3%83%83%E3%83%88%E3%83%9C%E3%83%83%E3%83%88Django%E3%82%A2%E3%83%97%E3%83%AA%EF%BC%89" rel="noopener noreferrer" target="_blank">https://scrapbox.io/nikkie-memos/jQuery%E3%83%A1%E3%83%A2%EF%BC%88%E3%83%81%E3%83%A3%E3%83%83%E3%83%88%E3%83%9C%E3%83%83%E3%83%88Django%E3%82%A2%E3%83%97%E3%83%AA%EF%BC%89</a></p>
+<div class="section" id="id21">
+<h3>フォームが送信されたときの処理を指定する<a class="headerlink" href="#id21" title="この見出しへのパーマリンク">¶</a></h3>
+<p>テンプレートに <code class="docutils literal notranslate"><span class="pre">&lt;script&gt;</span></code> タグを書いていきます。</p>
+<p>HTMLの <code class="docutils literal notranslate"><span class="pre">&lt;body&gt;</span></code> タグの末尾に書きます。</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;ja&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- 省略 --&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Talk with chatbot<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">&gt;</span>
+      {% csrf_token %} {{ form.as_p }}
+      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Send<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+
+  <span class="cm">&lt;!-- ここに script タグを書いていきます --&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>まずは以下のように書いてください。</p>
+<div class="literal-block-wrapper docutils container" id="id31">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id31" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos"> 2</span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"></span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">));</span><span class="w"></span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">form</span><span class="p">.</span><span class="nx">serialize</span><span class="p">());</span><span class="w"></span>
+<span class="linenos">10</span><span class="w">  </span><span class="p">});</span><span class="w"></span>
+<span class="linenos">11</span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>ライブラリ <code class="docutils literal notranslate"><span class="pre">jQuery</span></code> をCDN（Contents Delivery Network）から読み込みます（1行目）。
+ドキュメント <a class="reference external" href="https://jquery.com/download/#using-jquery-with-a-cdn" rel="noopener noreferrer" target="_blank">https://jquery.com/download/#using-jquery-with-a-cdn</a> の中からGoogleのAPIを選びました。
+この行により <code class="docutils literal notranslate"><span class="pre">jQuery</span></code> のメソッドが使えるようになります。</p>
+<p>3行目で、フォームの送信というイベントについて処理する関数（ハンドラ）を登録します。</p>
+<p>4行目 <code class="docutils literal notranslate"><span class="pre">event.preventDefault()</span></code> で画面遷移というフォームのデフォルトの挙動を無効化しています。</p>
+<p>ここではフォームの属性の値やフォームに入力される値の取得の仕方を確認するために、ログ出力しました（5行目〜）。</p>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開き、開発者ツールのコンソールを開いてから、メッセージを送信してみてください。
+<code class="docutils literal notranslate"><span class="pre">preventDefault</span></code> の効果で <strong>画面は切り替わらず</strong> に、ログが出力されます。</p>
+<table border="1" class="docutils align-default" id="id32">
+<caption><span class="caption-text">開発者ツールのコンソールで確認した値</span><a class="headerlink" href="#id32" title="このテーブルへのパーマリンク">¶</a></caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">form.prop(&quot;action&quot;)</span></code></td>
+<td><a class="reference external" href="http://127.0.0.1:8000/bot-response/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/bot-response/</a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal notranslate"><span class="pre">form.prop(&quot;method&quot;)</span></code></td>
+<td>post</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal notranslate"><span class="pre">form.serialize()</span></code></td>
+<td>csrfmiddlewaretoken=省略&amp;message=hello%20world</td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">form.serialize()</span></code> は日本語をエンコードします（ブラウザのURL欄の日本語と同じです）。</p>
+</div>
+<div class="section" id="ajax">
+<h3>フォームが送信されたときにAjaxで通信する<a class="headerlink" href="#ajax" title="この見出しへのパーマリンク">¶</a></h3>
+<p>上で確認した項目を使い、チャットボットが応答するURLにAjaxで通信します。</p>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id33" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos"> 2</span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"></span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="linenos"> 6</span>
+<span class="hll"><span class="linenos"> 7</span><span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span><span class="w"></span>
+</span><span class="linenos"> 8</span><span class="w">      </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">10</span><span class="w">      </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span><span class="w"></span>
+<span class="linenos">11</span><span class="w">      </span><span class="nx">dataType</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">12</span><span class="w">    </span><span class="p">})</span><span class="w"></span>
+<span class="hll"><span class="linenos">13</span><span class="w">      </span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">14</span><span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">statement</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">15</span><span class="w">      </span><span class="p">});</span><span class="w"></span>
+</span><span class="linenos">16</span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>フォームの <code class="docutils literal notranslate"><span class="pre">action</span></code> 属性のURLに、<code class="docutils literal notranslate"><span class="pre">method</span></code> 属性のHTTPメソッドで、フォームに入力されたデータを送ります。
+成功した場合、<code class="docutils literal notranslate"><span class="pre">done</span></code> イベントが発火し、登録されているハンドラにより返ってきたレスポンスをコンソールに出力します（14行目）。</p>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開き、開発者ツールのコンソールを開いてから、メッセージを送信します。
+送ったのと同じメッセージがコンソールに表示されます。</p>
+<p>コンソールを使って、ユーザとチャットボットがやり取りしているようにログ出力してみましょう。</p>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id34" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos"> 2</span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="linenos"> 3</span><span class="w">  </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"></span>
+<span class="linenos"> 5</span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span><span class="w"></span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">10</span><span class="w">      </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span><span class="w"></span>
+<span class="linenos">11</span><span class="w">      </span><span class="nx">dataType</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">12</span><span class="w">    </span><span class="p">})</span><span class="w"></span>
+<span class="linenos">13</span><span class="w">      </span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="hll"><span class="linenos">14</span><span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#id_message&quot;</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">15</span><span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;You -&gt; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">());</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">16</span><span class="w">        </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;bot: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">statement</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">17</span><span class="w">        </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span><span class="w"></span>
+</span><span class="linenos">18</span><span class="w">      </span><span class="p">});</span><span class="w"></span>
+<span class="linenos">19</span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>id <code class="docutils literal notranslate"><span class="pre">id_message</span></code> はDjangoにより、メッセージ入力の <code class="docutils literal notranslate"><span class="pre">input</span></code> 要素に設定されています
+（フォームのクラス定義の中で <code class="docutils literal notranslate"><span class="pre">message</span></code> という名前にしたので、 <code class="docutils literal notranslate"><span class="pre">id_message</span></code> となりました）。</p>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">フォームの <code class="docutils literal notranslate"><span class="pre">input</span></code> 要素には <code class="docutils literal notranslate"><span class="pre">id</span></code> が指定されている</span><a class="headerlink" href="#id35" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;message&quot;</span> <span class="na">maxlength</span><span class="o">=</span><span class="s">&quot;100&quot;</span> <span class="na">required</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;id_message&quot;</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>IDを指定して、この <code class="docutils literal notranslate"><span class="pre">input</span></code> 要素を <code class="docutils literal notranslate"><span class="pre">jQuery</span></code> で取得します。
+<code class="docutils literal notranslate"><span class="pre">val</span></code> は <code class="docutils literal notranslate"><span class="pre">input</span></code> 要素のvalue（入力された文字列）です。
+ユーザの入力をログ出力し、チャットボットのレスポンスも出力したあとで、フォームの入力を空文字列とし（17行目）、続けてやり取りできるようにします。</p>
+</div>
+<div class="section" id="id22">
+<h3>フォームが送信されたあと、画面にチャットを表示する<a class="headerlink" href="#id22" title="この見出しへのパーマリンク">¶</a></h3>
+<p>ログ出力したフォーマットで画面に出力しましょう。</p>
+<p>まず、フォームの上に、<strong>チャットの履歴を表示</strong> するための <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> 要素を追加します。</p>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id36" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Talk with chatbot<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="hll"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;chat-log&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span>
+<span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;chat:bot_response&#39; %}&quot;</span><span class="p">&gt;</span>
+  <span class="cm">&lt;!-- 以下、省略 --&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>Ajaxの通信が成功したときにチャットの履歴を表示する（画面に書き足す）ようにします。</p>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id37" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos"> 2</span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="hll"><span class="linenos"> 3</span><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">chatLog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#chat-log&quot;</span><span class="p">);</span><span class="w"></span>
+</span><span class="linenos"> 4</span>
+<span class="hll"><span class="linenos"> 5</span><span class="w">  </span><span class="kd">function</span><span class="w"> </span><span class="nx">createRow</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 6</span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;&lt;/p&gt;&quot;</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 7</span><span class="w">    </span><span class="nx">row</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 8</span><span class="w">    </span><span class="nx">chatLog</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">row</span><span class="p">);</span><span class="w"></span>
+</span><span class="linenos"> 9</span><span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="w">  </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">12</span><span class="w">    </span><span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">13</span><span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="w">    </span><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span><span class="w"></span>
+<span class="linenos">16</span><span class="w">      </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">17</span><span class="w">      </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">18</span><span class="w">      </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span><span class="w"></span>
+<span class="linenos">19</span><span class="w">      </span><span class="nx">dataType</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">20</span><span class="w">    </span><span class="p">})</span><span class="w"></span>
+<span class="linenos">21</span><span class="w">      </span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">22</span><span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#id_message&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="hll"><span class="linenos">23</span><span class="w">        </span><span class="nx">createRow</span><span class="p">(</span><span class="s2">&quot;You -&gt; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">());</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">24</span><span class="w">        </span><span class="nx">createRow</span><span class="p">(</span><span class="s2">&quot;bot: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">statement</span><span class="p">);</span><span class="w"></span>
+</span><span class="linenos">25</span><span class="w">        </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">26</span><span class="w">      </span><span class="p">});</span><span class="w"></span>
+<span class="linenos">27</span><span class="w">  </span><span class="p">});</span><span class="w"></span>
+<span class="linenos">28</span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>画面の表示を変えるために <code class="docutils literal notranslate"><span class="pre">createRow</span></code> 関数を作りました。
+これは <code class="docutils literal notranslate"><span class="pre">id=chat-log</span></code> の要素（＝上で加えた <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> 要素）の中に、 <code class="docutils literal notranslate"><span class="pre">&lt;p&gt;</span></code> 要素を追加します。
+<code class="docutils literal notranslate"><span class="pre">&lt;p&gt;</span></code> の文字列は <code class="docutils literal notranslate"><span class="pre">createRow</span></code> 関数の引数です。
+<code class="docutils literal notranslate"><span class="pre">jQuery</span></code> を使って <code class="docutils literal notranslate"><span class="pre">&lt;p&gt;</span></code> タグを作って、 <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> 要素の中に <strong>付け足し</strong> ています。</p>
+<p>Ajaxが成功したときのハンドラは、<code class="docutils literal notranslate"><span class="pre">console.log</span></code> から <code class="docutils literal notranslate"><span class="pre">createRow</span></code> 関数に差し替えました（22, 23行目）。</p>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開くと、オウム返しするチャットボットとやり取りできます！！</p>
+</div>
+<div class="section" id="id23">
+<h3>最終形<a class="headerlink" href="#id23" title="この見出しへのパーマリンク">¶</a></h3>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/home.html</span></code> は最終的には以下のようになります。
+変更箇所を優先して示したため、一部のタグ（<code class="docutils literal notranslate"><span class="pre">&lt;title&gt;</span></code> など）は省略しています。</p>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">templates/chat/home.html</span><a class="headerlink" href="#id38" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="hll"><span class="linenos"> 2</span>    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 3</span><span class="w">      </span><span class="p">.</span><span class="nc">log-window</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 4</span><span class="w">        </span><span class="k">max-width</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="kt">px</span><span class="p">;</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 5</span><span class="w">        </span><span class="k">max-height</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="kt">px</span><span class="p">;</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 6</span><span class="w">        </span><span class="k">overflow-y</span><span class="p">:</span><span class="w"> </span><span class="kc">scroll</span><span class="p">;</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 7</span><span class="w">      </span><span class="p">}</span><span class="w"></span>
+</span><span class="hll"><span class="linenos"> 8</span><span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+</span><span class="linenos"> 9</span>  <span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="linenos">10</span>  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="linenos">11</span>    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Talk with chatbot<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+<span class="hll"><span class="linenos">12</span>    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;chat-log&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;log-window&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span><span class="linenos">13</span>
+<span class="linenos">14</span>    <span class="p">&lt;</span><span class="nt">form</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;{% url &#39;chat:bot_response&#39; %}&quot;</span><span class="p">&gt;</span>
+<span class="linenos">15</span>      {% csrf_token %} {{ form.as_p }}
+<span class="linenos">16</span>      <span class="p">&lt;</span><span class="nt">button</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;submit&quot;</span><span class="p">&gt;</span>Send<span class="p">&lt;/</span><span class="nt">button</span><span class="p">&gt;</span>
+<span class="linenos">17</span>    <span class="p">&lt;/</span><span class="nt">form</span><span class="p">&gt;</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>    <span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos">20</span>    <span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="w"></span>
+<span class="linenos">21</span><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">chatLog</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#chat-log&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="w">      </span><span class="kd">function</span><span class="w"> </span><span class="nx">createRow</span><span class="p">(</span><span class="nx">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">24</span><span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;&lt;/p&gt;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">25</span><span class="w">        </span><span class="nx">row</span><span class="p">.</span><span class="nx">text</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">26</span><span class="w">        </span><span class="nx">chatLog</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">row</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">27</span><span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="w">      </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;form&quot;</span><span class="p">).</span><span class="nx">submit</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">30</span><span class="w">        </span><span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span><span class="w"></span>
+<span class="linenos">31</span><span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="w">        </span><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span><span class="w"></span>
+<span class="linenos">34</span><span class="w">          </span><span class="nx">url</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;action&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">35</span><span class="w">          </span><span class="nx">type</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">),</span><span class="w"></span>
+<span class="linenos">36</span><span class="w">          </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="nx">form</span><span class="p">.</span><span class="nx">serialize</span><span class="p">(),</span><span class="w"></span>
+<span class="linenos">37</span><span class="w">          </span><span class="nx">dataType</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;text&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="linenos">38</span><span class="w">        </span><span class="p">})</span><span class="w"></span>
+<span class="linenos">39</span><span class="w">          </span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">(</span><span class="nx">statement</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="linenos">40</span><span class="w">            </span><span class="kd">const</span><span class="w"> </span><span class="nx">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#id_message&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">41</span><span class="w">            </span><span class="nx">createRow</span><span class="p">(</span><span class="s2">&quot;You -&gt; &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">());</span><span class="w"></span>
+<span class="linenos">42</span><span class="w">            </span><span class="nx">createRow</span><span class="p">(</span><span class="s2">&quot;bot: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">statement</span><span class="p">);</span><span class="w"></span>
+<span class="linenos">43</span><span class="w">            </span><span class="nx">input</span><span class="p">.</span><span class="nx">val</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="hll"><span class="linenos">44</span><span class="w">            </span><span class="nx">chatLog</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">scrollTop</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">chatLog</span><span class="p">[</span><span class="mf">0</span><span class="p">].</span><span class="nx">scrollHeight</span><span class="p">;</span><span class="w"></span>
+</span><span class="linenos">45</span><span class="w">          </span><span class="p">})</span><span class="w"></span>
+<span class="hll"><span class="linenos">46</span><span class="w">          </span><span class="p">.</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">47</span><span class="w">            </span><span class="nb">window</span><span class="p">.</span><span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;もう一度やり直してください&quot;</span><span class="p">);</span><span class="w"></span>
+</span><span class="hll"><span class="linenos">48</span><span class="w">          </span><span class="p">});</span><span class="w"></span>
+</span><span class="linenos">49</span><span class="w">      </span><span class="p">});</span><span class="w"></span>
+<span class="linenos">50</span><span class="w">    </span><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="linenos">51</span>  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>(1)フォームの上のチャット履歴表示部分は、高さを決めて自動でスクロールするようにしました。
+12行目でclassを設定し、 <code class="docutils literal notranslate"><span class="pre">&lt;style&gt;</span></code> タグで最大の高さと、それを超えたときにスクロールするように設定します（2〜8行目）。
+Ajax通信が成功したときのイベントハンドラに44行目を追加し、チャット履歴は常に一番下までスクロールした状態（＝最新のメッセージとそれへのボットの応答が見える状態）としています。</p>
+<p>(2)Ajax通信が失敗するときもあるので、 <code class="docutils literal notranslate"><span class="pre">fail</span></code> イベントのハンドラを登録しました（46〜48行目）。</p>
+<p>以上で、単純なチャットボットとやり取りするWebアプリが手元のPCで動くようになりました！
+<strong>このあとはチャットボットをより賢くしていきます</strong> （初回で導入した <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> ライブラリを使います）。
+Djangoについてはあまり触らず、チャットボットを賢くすることにフォーカスしていきます。</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">chatbot-lecture-2021</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../10-overview/index.html">チャットボットとは</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../20-environment/index.html">環境構築</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30-chatterbot-first-step/index.html">ChatterBot はじめの一歩</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../40-django-app-basic/index.html">Django基礎（チャットボットをWebアプリにするための準備）</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">チャットボットとやり取りできるようにする</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#intro03">今回の位置づけ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">チャットボットとやり取りできる画面を作る</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id14">オウム返しするチャットボットを作る</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id20">画面遷移なしでチャットボットとやり取りできる</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../60-trained-bot-django-app/index.html">ChatterBotのチャットボットとWebアプリでやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">参考文献</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../40-django-app-basic/index.html" title="前の章へ">Django基礎（チャットボットをWebアプリにするための準備）</a></li>
+      <li>Next: <a href="../60-trained-bot-django-app/index.html" title="次の章へ">ChatterBotのチャットボットとWebアプリでやり取りできるようにする</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, nikkie.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/50-send-message-django-app/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

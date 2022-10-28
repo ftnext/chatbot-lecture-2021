@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django基礎（チャットボットをWebアプリにするための準備） &#8212; chatbot-lecture-2021  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/translations.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="検索" href="../search.html" />
+    <link rel="next" title="チャットボットとやり取りできるようにする" href="../50-send-message-django-app/index.html" />
+    <link rel="prev" title="ChatterBot はじめの一歩" href="../30-chatterbot-first-step/index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="django-web">
+<h1>Django基礎（チャットボットをWebアプリにするための準備）<a class="headerlink" href="#django-web" title="この見出しへのパーマリンク">¶</a></h1>
+<div class="section" id="id1">
+<h2>今回の位置づけ<a class="headerlink" href="#id1" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id2">
+<h3>前回の復習<a class="headerlink" href="#id2" title="この見出しへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li>チャットボット＝自動応答するプログラム（<a class="reference internal" href="../10-overview/index.html#what-is-chatbot"><span class="std std-ref">チャットボットの概要</span></a>）</li>
+<li>ライブラリ <code class="docutils literal notranslate"><span class="pre">chatterbot</span></code> を使ったPythonスクリプトを動かした（デモ）</li>
+</ul>
+<div class="literal-block-wrapper docutils container" id="id33">
+<div class="code-block-caption"><span class="caption-text">my_chatbot.py</span><a class="headerlink" href="#id33" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">chatterbot</span> <span class="kn">import</span> <span class="n">ChatBot</span>
+<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">chatterbot.languages</span> <span class="kn">import</span> <span class="n">JPN</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">chatterbot.trainers</span> <span class="kn">import</span> <span class="n">ChatterBotCorpusTrainer</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">CustomJPN</span><span class="p">(</span><span class="n">JPN</span><span class="p">):</span>
+<span class="linenos"> 7</span>    <span class="n">ISO_639_1</span> <span class="o">=</span> <span class="s2">&quot;ja_core_news_sm&quot;</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">11</span>    <span class="n">chatbot</span> <span class="o">=</span> <span class="n">ChatBot</span><span class="p">(</span><span class="s2">&quot;Training from corpus bot&quot;</span><span class="p">,</span> <span class="n">tagger_language</span><span class="o">=</span><span class="n">CustomJPN</span><span class="p">)</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">ChatterBotCorpusTrainer</span><span class="p">(</span><span class="n">chatbot</span><span class="p">)</span>
+<span class="linenos">14</span>    <span class="n">trainer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="s2">&quot;chatterbot.corpus.japanese&quot;</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="linenos">17</span>        <span class="k">try</span><span class="p">:</span>
+<span class="linenos">18</span>            <span class="n">user_input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;You: &quot;</span><span class="p">)</span>
+<span class="linenos">19</span>            <span class="n">response</span> <span class="o">=</span> <span class="n">chatbot</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<span class="linenos">20</span>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bot: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">EOFError</span><span class="p">,</span> <span class="ne">SystemExit</span><span class="p">):</span>
+<span class="linenos">22</span>            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>今回やること<a class="headerlink" href="#id3" title="この見出しへのパーマリンク">¶</a></h3>
+<p>チャットボットをWebアプリとして動かすための <strong>準備</strong> をします。</p>
+<ul class="simple">
+<li>Djangoを使って手元のPCで動くアプリケーションを開発していきます（デモ）</li>
+<li>今回チャットボットは触りません</li>
+</ul>
+</div>
+</div>
+<div class="section" id="djangoweb">
+<h2>DjangoによるWebアプリ<a class="headerlink" href="#djangoweb" title="この見出しへのパーマリンク">¶</a></h2>
+<p>アンケート：Djangoを</p>
+<ol class="arabic simple">
+<li>授業を元に自分でアプリ作った</li>
+<li>これまでの授業で受けた</li>
+<li>今回はじめて</li>
+</ol>
+<iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe><p>埋め込みではなく、手元で見たい場合のリンク：<a class="reference external" href="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html" rel="noopener noreferrer" target="_blank">https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html</a></p>
+<p>※この資料はWebアプリ開発が初めての方向けに説明しているので、知っているところは飛ばしてください</p>
+<div class="section" id="web">
+<h3>Webアプリ<a class="headerlink" href="#web" title="この見出しへのパーマリンク">¶</a></h3>
+<p>詳しくは、登壇資料のスライド9〜27</p>
+<ul class="simple">
+<li>WebアプリはWebブラウザから使うアプリ</li>
+<li>Webアプリケーションフレームワーク（以下、フレームワーク）を使って作る</li>
+<li>開発者は <strong>フレームワークの流儀に従って</strong> コードを追加する</li>
+<li>Djangoはフレームワークの1つ</li>
+</ul>
+</div>
+<div class="section" id="django">
+<h3>Djangoの流儀<a class="headerlink" href="#django" title="この見出しへのパーマリンク">¶</a></h3>
+<iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html#/4/8" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe><div class="section" id="id4">
+<h4>ファイルの配置<a class="headerlink" href="#id4" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>決められたルールに従ってファイルを配置する</li>
+<li><strong>Djangoが用意しているコマンド</strong> を使う</li>
+</ul>
+<p>ファイル配置の単位（このあと説明します）</p>
+<ul class="simple">
+<li>プロジェクト</li>
+<li>アプリケーション</li>
+</ul>
+</div>
+<div class="section" id="djangopython">
+<h4>Djangoの流儀に従ってPythonを書く<a class="headerlink" href="#djangopython" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>URL設定</li>
+<li>ビュー</li>
+<li>テンプレート</li>
+</ul>
+<p>対応する <strong>ファイル</strong> （PythonやHTML）があります（このあと説明します）</p>
+</div>
+</div>
+</div>
+<div class="section" id="django-project-and-application">
+<span id="id5"></span><h2>プロジェクト／アプリケーション作成<a class="headerlink" href="#django-project-and-application" title="この見出しへのパーマリンク">¶</a></h2>
+<div class="section" id="id6">
+<h3>Djangoのインストール<a class="headerlink" href="#id6" title="この見出しへのパーマリンク">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ChatterBot</span></code> をインストールした仮想環境を有効にします。
+これまでにPython 3.7系で仮想環境を作っています（<a class="reference internal" href="../20-environment/index.html#chatbot-environment"><span class="std std-ref">環境構築</span></a>）。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> ~/programming/chatbot
+$ <span class="nb">source</span> env/bin/activate
+$ pip install <span class="s1">&#39;Django&lt;4&#39;</span>
+</pre></div>
+</div>
+<p>インストールしたことの確認</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ django-admin --version
+<span class="m">3</span>.2.9
+</pre></div>
+</div>
+<div class="section" id="id7">
+<h4>脱線：Djangoのバージョンについて<a class="headerlink" href="#id7" title="この見出しへのパーマリンク">¶</a></h4>
+<p><a class="reference external" href="https://www.djangoproject.com/download/" rel="noopener noreferrer" target="_blank">https://www.djangoproject.com/download/</a> のSupported Versions</p>
+<p>LTS＝long-term support（長期サポート）</p>
+<ul class="simple">
+<li>2系のLTS（2.2.x）はサポートが2022年4月まで</li>
+<li>3系のLTS（3.2.x）が登場しているので、 <strong>DjangoでWebアプリを新規に作るなら3.2.x</strong> がオススメ</li>
+</ul>
+<p>8ヶ月おきに新しいバージョンが出ます（現在最新は3.2 → 4.0 → 4.1 → ...）</p>
+</div>
+</div>
+<div class="section" id="id8">
+<h3>Djangoの用語：プロジェクトとアプリケーション<a class="headerlink" href="#id8" title="この見出しへのパーマリンク">¶</a></h3>
+<p>登壇資料のスライド31〜36</p>
+<iframe width="800" height="480" src="https://ftnext.github.io/2020_slides/pycon_shizu_Feb_django_intro/slide.html#/6/1" title="Djangoで始めるWeb開発の世界 〜Web開発を知らない方に贈る、Django Girls Tutorialとその周辺のクイックツアー〜"></iframe><p>以下は、Djangoの用語としての意味です</p>
+<div class="section" id="id9">
+<h4>プロジェクト<a class="headerlink" href="#id9" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>Djangoで作るWebアプリ全体の構成</li>
+<li>ディレクトリとその中に置かれるファイルを指す</li>
+<li>Webアプリに <strong>プロジェクトは1つ</strong></li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h4>アプリケーション<a class="headerlink" href="#id10" title="この見出しへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li>Webアプリの機能1つ1つ</li>
+<li>ディレクトリとその中に置かれるファイルを指す（プロジェクトとは置かれるファイルが異なります）</li>
+<li>Webアプリは <strong>1つ以上のアプリケーション</strong> からなる</li>
+<li>例<ul>
+<li>チャットボットと会話する機能のアプリケーション</li>
+<li>ユーザ管理（ログイン・ログアウトなど）機能のアプリケーション</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h4>配置イメージ<a class="headerlink" href="#id11" title="この見出しへのパーマリンク">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── プロジェクト
+├── アプリケーションA
+├── アプリケーションB
+├──  :
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id12">
+<h3>プロジェクト作成と初期設定<a class="headerlink" href="#id12" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id13">
+<h4>プロジェクト作成<a class="headerlink" href="#id13" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">djangochatbot</span></code> という名前のプロジェクトを作ります。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ django-admin startproject djangochatbot
+</pre></div>
+</div>
+<p><strong class="command">ls</strong> で確認すると以下のディレクトリ構造になっていることが確認できます。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>~/programming/chatbot
+├── djangochatbot  # &lt;- このあと中を見ます
+├── db.sqlite3  # &lt;- これまでに実行した python my_chatbot.py でできた
+├── env
+├── greetings_ja.yml
+└── my_chatbot.py
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>djangochatbot
+├── djangochatbot  # &lt;- プロジェクト
+└── manage.py  # &lt;- プロジェクト作成で作られます
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">~/programming/chatbot</span></code> 直下の <code class="file docutils literal notranslate"><span class="pre">djangochatbot</span></code> ディレクトリをリネームしましょう。
+Webアプリのソースコードが置かれるので <code class="file docutils literal notranslate"><span class="pre">app</span></code> とします（プロジェクトのディレクトリと名前を変えることで説明しやすくなる都合もあります）。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mv djangochatbot app
+</pre></div>
+</div>
+</div>
+<div class="section" id="id14">
+<h4>Djangoアプリのサーバを動かす<a class="headerlink" href="#id14" title="この見出しへのパーマリンク">¶</a></h4>
+<p>以降は <code class="file docutils literal notranslate"><span class="pre">app</span></code> ディレクトリで作業します。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> app
+</pre></div>
+</div>
+<p>プロジェクト作成時にできた <code class="file docutils literal notranslate"><span class="pre">manage.py</span></code> はDjangoでのアプリケーション開発がしやすくなるサブコマンドを提供します。
+<code class="docutils literal notranslate"><span class="pre">runserver</span></code> サブコマンドで、Djangoアプリのサーバが起動します。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python manage.py runserver
+</pre></div>
+</div>
+<p><a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> をブラウザで開き、ロケットが動いている画面が見えたら、サーバは問題なく動いています！</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p class="last">Djangoアプリのサーバの停止は <kbd class="kbd compound docutils literal notranslate"><kbd class="kbd docutils literal notranslate">Control</kbd>-<kbd class="kbd docutils literal notranslate">C</kbd></kbd> です。</p>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">シェルを複数開き、1つで <strong class="command">python manage.py runserver</strong> しておくと開発しやすいです。
+Djangoアプリのサーバはファイルの変更を検知して自動で読み込み直します。
+ただし新規追加したファイルは読み込めない場合があるので、ファイルを新規追加したときは <strong>サーバを止めて再度</strong> <code class="docutils literal notranslate"><span class="pre">runserver</span></code> するのをオススメします。</p>
+</div>
+</div>
+<div class="section" id="settings-py">
+<h4><code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> を変更<a class="headerlink" href="#settings-py" title="この見出しへのパーマリンク">¶</a></h4>
+<div class="admonition warning">
+<p class="first admonition-title">警告</p>
+<p class="last">手元のPC（＝ローカル環境）で動かすのを優先してプロジェクトを設定しています。
+Webアプリとして公開するには <code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> で <code class="docutils literal notranslate"><span class="pre">SECRET_KEY</span></code> や <code class="docutils literal notranslate"><span class="pre">STATIC_ROOT</span></code> などの追加設定が必要です。</p>
+</div>
+<p>日本語の設定に変更します。
+<code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> には変数が定義されていて、指す値を変えることで設定を変更できます。</p>
+<p>以下の2つの変数を探して、指す値を変更します。</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">LANGUAGE_CODE</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">TIME_ZONE</span></code></li>
+</ul>
+<div class="section" id="id15">
+<h5>変更前<a class="headerlink" href="#id15" title="この見出しへのパーマリンク">¶</a></h5>
+<div class="literal-block-wrapper docutils container" id="id34">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/settings.py</span><a class="headerlink" href="#id34" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;en-us&#39;</span>
+
+<span class="n">TIME_ZONE</span> <span class="o">=</span> <span class="s1">&#39;UTC&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id16">
+<h5>変更後<a class="headerlink" href="#id16" title="この見出しへのパーマリンク">¶</a></h5>
+<div class="literal-block-wrapper docutils container" id="id35">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/settings.py</span><a class="headerlink" href="#id35" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">LANGUAGE_CODE</span> <span class="o">=</span> <span class="s1">&#39;ja&#39;</span>
+
+<span class="n">TIME_ZONE</span> <span class="o">=</span> <span class="s1">&#39;Asia/Tokyo&#39;</span>
+</pre></div>
+</div>
+</div>
+<p>日本語・JSTに設定しました。</p>
+<p><a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> をブラウザで開くと、英語だった表示が日本語に変わっています。</p>
+</div>
+</div>
+</div>
+<div class="section" id="id17">
+<h3>アプリケーション作成とそれに伴う設定<a class="headerlink" href="#id17" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id18">
+<h4>アプリケーション作成<a class="headerlink" href="#id18" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">chat</span></code> という名前のアプリケーションを作ります。
+<code class="file docutils literal notranslate"><span class="pre">manage.py</span></code> の <code class="docutils literal notranslate"><span class="pre">startapp</span></code> サブコマンドを使います。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python manage.py startapp chat
+</pre></div>
+</div>
+<p><strong class="command">ls</strong> で確認しましょう。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>app
+├── chat  # &lt;- アプリケーション
+├── djangochatbot
+└── manage.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="id19">
+<h4><code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> を変更<a class="headerlink" href="#id19" title="この見出しへのパーマリンク">¶</a></h4>
+<p>変数 <code class="docutils literal notranslate"><span class="pre">INSTALLED_APPS</span></code> を探して、指す値を変更します。
+これはリストを指していて、リストの要素は文字列です。</p>
+<p>作った <code class="docutils literal notranslate"><span class="pre">chat</span></code> アプリケーションをリストに追加します。</p>
+<div class="literal-block-wrapper docutils container" id="id36">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/settings.py</span><a class="headerlink" href="#id36" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;django.contrib.admin&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.auth&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.contenttypes&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.sessions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.messages&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;django.contrib.staticfiles&#39;</span><span class="p">,</span>
+
+<span class="hll">    <span class="s2">&quot;chat.apps.ChatConfig&quot;</span><span class="p">,</span>
+</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id20">
+<h5>発展：追加した文字列の意味<a class="headerlink" href="#id20" title="この見出しへのパーマリンク">¶</a></h5>
+<p><code class="docutils literal notranslate"><span class="pre">chat</span></code> アプリケーションの一部として作られた <code class="file docutils literal notranslate"><span class="pre">app/chat/apps.py</span></code> の中のクラスを指定しています。</p>
+<div class="literal-block-wrapper docutils container" id="id37">
+<div class="code-block-caption"><span class="caption-text">app/chat/apps.py</span><a class="headerlink" href="#id37" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.apps</span> <span class="kn">import</span> <span class="n">AppConfig</span>
+
+
+<span class="hll"><span class="k">class</span> <span class="nc">ChatConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
+</span>    <span class="n">default_auto_field</span> <span class="o">=</span> <span class="s1">&#39;django.db.models.BigAutoField&#39;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;chat&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="html">
+<span id="django-components"></span><h2>HTMLを表示する<a class="headerlink" href="#html" title="この見出しへのパーマリンク">¶</a></h2>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開いたときに、いまはロケットのページが見えています。
+これを、 <strong>私たちが用意したHTMLが表示される</strong> ように変更します。</p>
+<div class="section" id="id21">
+<h3>HTMLを表示するためには<a class="headerlink" href="#id21" title="この見出しへのパーマリンク">¶</a></h3>
+<div class="section" id="id22">
+<h4>リクエストとレスポンス<a class="headerlink" href="#id22" title="この見出しへのパーマリンク">¶</a></h4>
+<p>登壇資料のスライド40〜47</p>
+<ul class="simple">
+<li>リクエスト： <strong>URLやブラウザに入力したデータ</strong> をリクエストとしてWebアプリのサーバに送信</li>
+<li>レスポンス：Webアプリは <strong>処理結果（HTMLを含む）</strong> をレスポンスとして、Webブラウザに返す</li>
+</ul>
+</div>
+<div class="section" id="id23">
+<h4>Djangoの流儀に則った開発項目<a class="headerlink" href="#id23" title="この見出しへのパーマリンク">¶</a></h4>
+<p>HTMLの表示には、以下の要素が必要です。</p>
+<ol class="arabic simple">
+<li>URL設定（アプリケーションのURL設定を追加）</li>
+<li>ビュー（関数を追加）</li>
+<li>テンプレートを追加</li>
+</ol>
+<div class="figure align-default">
+<img alt="https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/spzcolab_Jan_django/2/8-urlconf_view_template.png" src="https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/spzcolab_Jan_django/2/8-urlconf_view_template.png" />
+</div>
+<p>1つずつ見ていきましょう。</p>
+</div>
+</div>
+<div class="section" id="url">
+<h3>URL設定<a class="headerlink" href="#url" title="この見出しへのパーマリンク">¶</a></h3>
+<p>URL設定は、リクエストのURLを元に、ビューにある処理を呼び出します（登壇資料のスライド49〜52）。</p>
+<div class="figure align-default">
+<img alt="https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/pycon_shizu_Feb_django_intro/2/4-urlconf.png" src="https://raw.githubusercontent.com/ftnext/2020_slides/master/docs/_images/pycon_shizu_Feb_django_intro/2/4-urlconf.png" />
+</div>
+<p>今回の作り方では、プロジェクトの <code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> にて、プロジェクトの <code class="file docutils literal notranslate"><span class="pre">urls.py</span></code> が使われるように設定されています。</p>
+<div class="section" id="urls-py">
+<h4>プロジェクトの <code class="file docutils literal notranslate"><span class="pre">urls.py</span></code><a class="headerlink" href="#urls-py" title="この見出しへのパーマリンク">¶</a></h4>
+<div class="section" id="id24">
+<h5>変更前<a class="headerlink" href="#id24" title="この見出しへのパーマリンク">¶</a></h5>
+<div class="literal-block-wrapper docutils container" id="id38">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/urls.py</span><a class="headerlink" href="#id38" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/admin/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/admin/</a> を開くと、Djangoが用意している管理画面にログインするための画面が表示されます。</p>
+</div>
+<div class="section" id="id25">
+<h5>URL設定の仕組み<a class="headerlink" href="#id25" title="この見出しへのパーマリンク">¶</a></h5>
+<p>URL（例：<a class="reference external" href="http://127.0.0.1:8000/admin/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/admin/</a> ）は3つに分かれます（登壇資料のスライド114）。</p>
+<ul class="simple">
+<li>プロトコル http</li>
+<li>ホスト 127.0.0.1:8000 （＝手元のPCの8000番ポート）</li>
+<li>パス admin/</li>
+</ul>
+<p>URL設定は <strong>パス</strong> を見ます。</p>
+<p><code class="file docutils literal notranslate"><span class="pre">app/djangochatbot/urls.py</span></code> には「パスが <code class="docutils literal notranslate"><span class="pre">&quot;admin/&quot;</span></code> だったら、Djangoで用意している管理画面用のURL設定に沿って動作する」指定です。</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p class="last">ブラウザでは普段ドメイン名を入力しますよね（例：<a class="reference external" href="https://www.google.com/" rel="noopener noreferrer" target="_blank">https://www.google.com/</a> ）
+DNSという仕組みでドメイン名からIPアドレスに変換されています</p>
+</div>
+</div>
+<div class="section" id="id26">
+<h5>URL設定に追加する<a class="headerlink" href="#id26" title="この見出しへのパーマリンク">¶</a></h5>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開いたときの動きを設定したいので、パスは <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> （空文字列）です。</p>
+<p>以下のように設定します。</p>
+<div class="literal-block-wrapper docutils container" id="id39">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/urls.py</span><a class="headerlink" href="#id39" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<span class="hll"><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">include</span><span class="p">,</span> <span class="n">path</span>
+</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">path</span><span class="p">(</span><span class="s1">&#39;admin/&#39;</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+<span class="hll">    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="s2">&quot;chat.urls&quot;</span><span class="p">)),</span>
+</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">include</span></code> のimportを追加します。
+<code class="docutils literal notranslate"><span class="pre">path(&quot;&quot;,</span> <span class="pre">include(&quot;chat.urls&quot;))</span></code> は、「パスが <code class="docutils literal notranslate"><span class="pre">&quot;admin/&quot;</span></code> でない場合、chatアプリケーションの <code class="file docutils literal notranslate"><span class="pre">urls.py</span></code> にあるURL設定を使う」という指定です。</p>
+<p>いまは <code class="file docutils literal notranslate"><span class="pre">app/chat/urs.py</span></code> がないので <strong class="command">python manage.py runserver</strong> はエラーを送出します（サーバは動いていません）。</p>
+<div class="admonition note">
+<p class="first admonition-title">注釈</p>
+<p>今回作るチャットボットアプリは小さいですが、Djangoで一般的なプラクティスに沿って手順を書いています。
+例えばURL設定で <code class="docutils literal notranslate"><span class="pre">include</span></code> を使わずに、プロジェクトの <code class="file docutils literal notranslate"><span class="pre">urls.py</span></code> だけで進めることもできます。</p>
+<p class="last">Djangoで一般的なプラクティスに従うことで、今は小さなチャットボットアプリでも今後機能追加がしやすくなります。</p>
+</div>
+</div>
+</div>
+<div class="section" id="id27">
+<h4>アプリケーションの <code class="file docutils literal notranslate"><span class="pre">urls.py</span></code><a class="headerlink" href="#id27" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="file docutils literal notranslate"><span class="pre">app/chat/urs.py</span></code> を作りましょう。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ touch chat/urls.py
+</pre></div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id40">
+<div class="code-block-caption"><span class="caption-text">app/chat/urls.py</span><a class="headerlink" href="#id40" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span><span class="kn">from</span> <span class="nn">chat</span> <span class="kn">import</span> <span class="n">views</span>
+<span class="linenos">4</span>
+<span class="linenos">5</span><span class="n">app_name</span> <span class="o">=</span> <span class="s2">&quot;chat&quot;</span>
+<span class="linenos">6</span>
+<span class="linenos">7</span><span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">8</span>    <span class="n">path</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;home&quot;</span><span class="p">),</span>
+<span class="linenos">9</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>このURL設定は、「パスが <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> （空文字列）のとき、<code class="file docutils literal notranslate"><span class="pre">chat/views.py</span></code> の <code class="docutils literal notranslate"><span class="pre">home</span></code> （関数）を呼び出す」としています。</p>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/views.py</span></code> はアプリケーション作成時にできていますが、中身は空なので、 <code class="docutils literal notranslate"><span class="pre">views.home</span></code> がないというエラー（<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>）が送出されます（まだサーバは動いていません）。</p>
+<div class="admonition hint">
+<p class="first admonition-title">ヒント</p>
+<p class="last">5行目の <code class="docutils literal notranslate"><span class="pre">app_name</span></code> もDjangoで一般的なプラクティスの1つです。
+複数のアプリケーションで同じ <code class="docutils literal notranslate"><span class="pre">name</span></code> のURL設定があったとしても、<code class="docutils literal notranslate"><span class="pre">&lt;app_name&gt;:&lt;name&gt;</span></code> として区別できます。</p>
+</div>
+</div>
+</div>
+<div class="section" id="id28">
+<h3>ビュー<a class="headerlink" href="#id28" title="この見出しへのパーマリンク">¶</a></h3>
+<p>ビューは、URL設定により呼び出され、リクエストを処理し、レスポンスを返します（登壇資料のスライド54〜58）。
+実体は関数です（クラスで定義することもできますが、この講義では扱いません）。</p>
+<p><code class="file docutils literal notranslate"><span class="pre">chat/views.py</span></code> に <code class="docutils literal notranslate"><span class="pre">home</span></code> 関数を定義します。</p>
+<div class="literal-block-wrapper docutils container" id="id41">
+<div class="code-block-caption"><span class="caption-text">app/chat/views.py</span><a class="headerlink" href="#id41" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+<span class="linenos">2</span>
+<span class="linenos">3</span>
+<span class="linenos">4</span><span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<span class="linenos">5</span>    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s2">&quot;chat/home.html&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>URL設定により呼び出されるビューの関数は第1引数に <code class="docutils literal notranslate"><span class="pre">request</span></code> をとります（4行目）。
+ここにはリクエストのデータが詰まっています。</p>
+<p><code class="docutils literal notranslate"><span class="pre">home</span></code> 関数は <code class="file docutils literal notranslate"><span class="pre">chat/home.html</span></code> （テンプレート）を使ってレスポンスを組み立て、それを返しています（ブラウザに返ります）。</p>
+<p>以上の設定で <strong class="command">python manage.py runserver</strong> は動作するようになりました。</p>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開いてみましょう。
+すると、 <code class="docutils literal notranslate"><span class="pre">TemplateDoesNotExist</span></code> （テンプレートが存在しない）と表示されます。</p>
+</div>
+<div class="section" id="id29">
+<h3>テンプレート<a class="headerlink" href="#id29" title="この見出しへのパーマリンク">¶</a></h3>
+<p>テンプレートは、Webアプリの見た目に関わります。
+HTMLとDjango独自のタグで書かれます（登壇資料のスライド60〜66）。</p>
+<p>今送出されているエラーは「テンプレートが存在しない」ですから、テンプレートを配置すれば解決します。
+空のテンプレートを置きましょう。</p>
+<div class="section" id="id30">
+<h4>空のテンプレートを置く<a class="headerlink" href="#id30" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="file docutils literal notranslate"><span class="pre">manage.py</span></code> やプロジェクト、アプリケーションがあるディレクトリに <code class="file docutils literal notranslate"><span class="pre">templates</span></code> という名前のディレクトリを作ります。
+ここに今回のアプリで使うテンプレートを置いていきます。</p>
+<p>ビューで <code class="file docutils literal notranslate"><span class="pre">chat/home.html</span></code> というテンプレートを指定しているので、 <code class="file docutils literal notranslate"><span class="pre">chat</span></code> ディレクトリの中に <code class="file docutils literal notranslate"><span class="pre">home.html</span></code> を置きます。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mkdir -p templates/chat
+$ touch templates/chat/home.html
+</pre></div>
+</div>
+</div>
+<div class="section" id="id31">
+<h4><code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> を変更<a class="headerlink" href="#id31" title="この見出しへのパーマリンク">¶</a></h4>
+<p><code class="file docutils literal notranslate"><span class="pre">templates</span></code> ディレクトリにテンプレートがあるという設定を追加します。</p>
+<p>変更するのは <code class="docutils literal notranslate"><span class="pre">TEMPLATES</span></code> です。
+これはリストで、要素は辞書です。
+キー <code class="docutils literal notranslate"><span class="pre">&quot;DIRS&quot;</span></code> の値（<code class="docutils literal notranslate"><span class="pre">[]</span></code>）を書き換えます。</p>
+<div class="section" id="id32">
+<h5>変更後<a class="headerlink" href="#id32" title="この見出しへのパーマリンク">¶</a></h5>
+<div class="literal-block-wrapper docutils container" id="id42">
+<div class="code-block-caption"><span class="caption-text">app/djangochatbot/settings.py</span><a class="headerlink" href="#id42" title="このコードへのパーマリンク">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TEMPLATES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s1">&#39;BACKEND&#39;</span><span class="p">:</span> <span class="s1">&#39;django.template.backends.django.DjangoTemplates&#39;</span><span class="p">,</span>
+<span class="hll">        <span class="s1">&#39;DIRS&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">BASE_DIR</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span><span class="p">],</span>
+</span>        <span class="s1">&#39;APP_DIRS&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s1">&#39;OPTIONS&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;context_processors&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s1">&#39;django.template.context_processors.debug&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;django.template.context_processors.request&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;django.contrib.auth.context_processors.auth&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;django.contrib.messages.context_processors.messages&#39;</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="first admonition-title">ヒント</p>
+<p><code class="docutils literal notranslate"><span class="pre">BASE_DIR</span></code> は <code class="docutils literal notranslate"><span class="pre">pathlib</span></code> の <code class="docutils literal notranslate"><span class="pre">Path</span></code> オブジェクトです（<code class="file docutils literal notranslate"><span class="pre">settings.py</span></code> の上部で定義されています）。
+<code class="docutils literal notranslate"><span class="pre">Path</span></code> オブジェクトは <code class="docutils literal notranslate"><span class="pre">/</span></code> 演算子で、新たなパスを作れます。</p>
+<div class="last highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span>
+<span class="go">PosixPath(&#39;app&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;app&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;templates&quot;</span>
+<span class="go">PosixPath(&#39;app/templates&#39;)</span>
+</pre></div>
+</div>
+</div>
+<p>ブラウザで <a class="reference external" href="http://127.0.0.1:8000/" rel="noopener noreferrer" target="_blank">http://127.0.0.1:8000/</a> を開くと、真っ白な画面が表示されます。
+エラーがなくなりました！</p>
+<p>いま <code class="file docutils literal notranslate"><span class="pre">chat/home.html</span></code> にはなにもHTMLを書いていないので、真っ白い画面が表示されます。
+テンプレートにHTMLを書いてからブラウザをリロードすると反映されます（例：<code class="docutils literal notranslate"><span class="pre">&lt;h1&gt;こんにちは&lt;/h1&gt;</span></code>）。</p>
+<div class="admonition hint">
+<p class="first admonition-title">ヒント</p>
+<p class="last"><code class="file docutils literal notranslate"><span class="pre">templates</span></code> ディレクトリを作るのもDjangoで一般的なプラクティスの1つです。
+アプリケーションの中に <code class="file docutils literal notranslate"><span class="pre">chat/templates/chat/home.html</span></code> を作るだけでもエラーは解決しますが、
+アプリケーションが増えたときに <code class="file docutils literal notranslate"><span class="pre">templates</span></code> ディレクトリにテンプレートがまとまっているというのは便利です。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">chatbot-lecture-2021</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../10-overview/index.html">チャットボットとは</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../20-environment/index.html">環境構築</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../30-chatterbot-first-step/index.html">ChatterBot はじめの一歩</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Django基礎（チャットボットをWebアプリにするための準備）</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">今回の位置づけ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#djangoweb">DjangoによるWebアプリ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#django-project-and-application">プロジェクト／アプリケーション作成</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#html">HTMLを表示する</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../50-send-message-django-app/index.html">チャットボットとやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../60-trained-bot-django-app/index.html">ChatterBotのチャットボットとWebアプリでやり取りできるようにする</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">参考文献</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../30-chatterbot-first-step/index.html" title="前の章へ">ChatterBot はじめの一歩</a></li>
+      <li>Next: <a href="../50-send-message-django-app/index.html" title="次の章へ">チャットボットとやり取りできるようにする</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, nikkie.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.3.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/40-django-app-basic/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
